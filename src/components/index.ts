@@ -1,2 +1,1 @@
-export { default as Section } from './ui/section';
-
+export { default as Section } from './ui/Section.tsx';
