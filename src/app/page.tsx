@@ -1,9 +1,9 @@
-import { Section } from '@/components'
+import Button from '@/components/ui/button';
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <Section title="홈 페이지">
-      <p>홈 페이지 방문</p>
-    </Section>
-  )
+    <div>
+      <Button>로그인</Button>
+    </div>
+  );
 }

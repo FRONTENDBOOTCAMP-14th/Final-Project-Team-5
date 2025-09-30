@@ -1,21 +1,19 @@
-import '@/styles/main.css'
-import type { PropsWithChildren } from 'react'
+import '@/styles/main.css';
+import type { Metadata } from 'next';
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export const metadata: Metadata = {
+  title: '오늘뭐입지 랜딩페이지',
+  description: '오늘뭐입지 랜딩페이지(로그인) 입니다.',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="ko-KR">
-      <head>
-        <link
-          as="font"
-          rel="stylesheet"
-          fetchPriority="high"
-          crossOrigin="anonymous"
-          href="https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css"
-        />
-      </head>
-      <body>
-        <main>{children}</main>
-      </body>
+      <body>{children}</body>
     </html>
-  )
+  );
 }
