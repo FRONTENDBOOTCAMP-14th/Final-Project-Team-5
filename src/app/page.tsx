@@ -1,9 +1,10 @@
 import Button from '@/components/ui/button';
+import Frame from '@/components/ui/Frame';
 
 export default function Home() {
   return (
-    <div>
+    <Frame>
       <Button>로그인</Button>
-    </div>
+    </Frame>
   );
 }
