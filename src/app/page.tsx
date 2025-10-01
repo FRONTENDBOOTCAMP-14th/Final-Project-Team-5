@@ -2,7 +2,7 @@
 
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
-import Input from '@/components/ui/Input';
+import Input from '@/components/ui/Input2';
 import Modal from '@/components/ui/Modal';
 import SnsButton from '@/components/ui/SnsButton';
 import Spinner from '@/components/ui/Spinner';
