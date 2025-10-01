@@ -3,7 +3,7 @@
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
 import Input from '@/components/ui/Input';
-import Modal from '@/components/ui/Modal2';
+import Modal from '@/components/ui/Modal';
 import SnsButton from '@/components/ui/SnsButton';
 import Spinner from '@/components/ui/Spinner';
 import { Toaster } from 'sonner';
