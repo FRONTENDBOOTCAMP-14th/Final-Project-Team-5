@@ -1,5 +1,6 @@
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Modal from '@/components/ui/Modal';
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
         label="이메일"
         placeholder="이메일을 입력해주세요."
       />
+      <Modal></Modal>
     </div>
   );
 }
