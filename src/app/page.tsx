@@ -1,7 +1,9 @@
 import Button from '@/components/ui/Button';
+import Frame from '@/components/ui/Frame';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
-import Frame from '@/components/ui/Frame';
+import { Toaster } from 'sonner';
+import ImageForm from '../components/ui/ImageForm';
 
 export default function Home() {
   return (
@@ -14,6 +16,8 @@ export default function Home() {
         placeholder="이메일을 입력해주세요."
       />
       <Modal></Modal>
+      <Toaster position="top-center" />
+      <ImageForm />
     </Frame>
   );
 }
