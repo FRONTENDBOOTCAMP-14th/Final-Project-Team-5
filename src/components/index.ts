@@ -3,7 +3,7 @@ export { default as FilterBtn } from './ui/FilterButton';
 export { default as Frame } from './ui/Frame';
 export { default as ImageForm } from './ui/ImageForm';
 export { default as ImageList } from './ui/ImageList';
-export { default as Input } from './ui/Input2';
+export { default as Input } from './ui/Input';
 export { default as Modal } from './ui/Modal';
 export { default as Notification } from './ui/Notification';
 export { default as Section } from './ui/Section';
