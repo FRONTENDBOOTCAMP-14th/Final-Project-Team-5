@@ -6,11 +6,16 @@ import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import SnsButton from '@/components/ui/SnsButton';
 import Spinner from '@/components/ui/Spinner';
+import { useState } from 'react';
 import { Toaster } from 'sonner';
+import { Notification } from '../components';
 import ImageForm from '../components/ui/ImageForm';
 import ImageList from '../components/ui/ImageList';
 
 export default function Home() {
+  // 알림창 다이얼로그 기능 테스트용 상태
+  const [openDialog, setOpenDialog] = useState(false);
+
   return (
     <Frame>
       <Button>로그인</Button>
@@ -21,6 +26,21 @@ export default function Home() {
         placeholder="이메일을 입력해주세요."
       />
       <Modal></Modal>
+      {/* 알림창 오픈확인을 위한 임시버튼 */}
+      <button
+        className="border rounded-xl p-1 cursor-pointer"
+        onClick={() => setOpenDialog(true)}
+      >
+        알림창 열기 버튼(테스트용)
+      </button>
+      <Notification
+        title="알림"
+        contents="알림메세지 입니다."
+        button1="취소"
+        button2="확인"
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+      />
       <Toaster position="top-center" />
       <ImageForm />
       <Spinner size="sm" className="py-2"></Spinner>
