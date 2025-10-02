@@ -2,13 +2,14 @@
 
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
+import ImageForm from '@/components/ui/ImageForm';
+import ImageList from '@/components/ui/ImageList';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import SnsButton from '@/components/ui/SnsButton';
 import Spinner from '@/components/ui/Spinner';
+import WeatherDashboard from '@/components/ui/WeatherDashboard';
 import { Toaster } from 'sonner';
-import ImageForm from '../components/ui/ImageForm';
-import ImageList from '../components/ui/ImageList';
 
 export default function Home() {
   return (
@@ -32,6 +33,13 @@ export default function Home() {
         />
         <SnsButton provider="google" onClick={() => console.log('구글 클릭')} />
       </div>
+      <WeatherDashboard
+        src="/weather/sunny.svg"
+        width={22}
+        height={22}
+        location="강남구 역삼동"
+        condition="맑음"
+      />
     </Frame>
   );
 }
