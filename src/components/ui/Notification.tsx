@@ -13,12 +13,15 @@ type DialogProps = ComponentProps<'dialog'> &
   CommonProps & {
     title: ReactNode;
     contents: ReactNode;
+    button1: ReactNode;
+    button2: ReactNode;
   };
-type CustomDialogProps = ComponentProps<'div'> & CommonProps;
 
 export default function Notification({
   title,
   contents,
+  button1,
+  button2,
   open = false,
   onClose,
   children,
@@ -48,22 +51,22 @@ export default function Notification({
         <span className="block font-bold">{title}</span>
         <span className="block">{contents}</span>
       </p>
-      <div className="border-t-1 border-gray-400">
+      <div className="flex border-t-1 border-gray-400">
         {/* 취소 및 돌아가기 버튼 */}
         <button
           type="button"
-          className="py-3 px-16 cursor-pointer border-r-1 border-gray-400"
+          className="py-3 w-1/2 cursor-pointer border-r border-gray-400"
           onClick={onClose}
         >
-          버튼1
+          {button1}
         </button>
         {/* 확인 및 탈퇴하기 버튼 */}
         <button
           type="button"
-          className="py-3 px-16 cursor-pointer"
+          className="py-3 w-1/2 cursor-pointer"
           onClick={onClose}
         >
-          버튼2
+          {button2}
         </button>
       </div>
     </dialog>
