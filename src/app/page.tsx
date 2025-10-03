@@ -2,67 +2,66 @@
 
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
-import ImageForm from '@/components/ui/ImageForm';
-import ImageList from '@/components/ui/ImageList';
-import Input from '@/components/ui/Input';
-import Modal from '@/components/ui/Modal';
 import SnsButton from '@/components/ui/SnsButton';
-import Spinner from '@/components/ui/Spinner';
+import Image from 'next/image';
+import Link from 'next/link';
 
-import WeatherDashboard from '@/components/ui/WeatherDashboard';
-import { useState } from 'react';
-import { Toaster } from 'sonner';
-import { Notification } from '../components';
-import ImageForm from '../components/ui/ImageForm';
-import ImageList from '../components/ui/ImageList';
+export default function LandingPage() {
+  function HandleKakaoLogin() {
+    // 카카오 로그인 로직 구현
+    console.log('카카오 로그인');
+  }
 
-export default function Home() {
-  // 알림창 다이얼로그 기능 테스트용 상태
-  const [openDialog, setOpenDialog] = useState(false);
+  function HandleGoogleLogin() {
+    // 구글 로그인 로직 구현
+    console.log('구글 로그인');
+  }
 
   return (
     <Frame>
-      <Button>로그인</Button>
-      <Input
-        id="email"
-        name="email"
-        label="이메일"
-        placeholder="이메일을 입력해주세요."
-      />
-      <Modal></Modal>
-      {/* 알림창 오픈확인을 위한 임시버튼 */}
-      <button
-        className="border rounded-xl p-1 cursor-pointer"
-        onClick={() => setOpenDialog(true)}
-      >
-        알림창 열기 버튼(테스트용)
-      </button>
-      <Notification
-        title="알림"
-        contents="알림메세지 입니다."
-        button1="취소"
-        button2="확인"
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-      />
-      <Toaster position="top-center" />
-      <ImageForm />
-      <Spinner size="sm" className="py-2"></Spinner>
-      <ImageList src1="/" src2="/" />
-      <div className="flex gap-4 justify-center p-8">
-        <SnsButton
-          provider="kakao"
-          onClick={() => console.log('카카오 클릭')}
-        />
-        <SnsButton provider="google" onClick={() => console.log('구글 클릭')} />
+      <div className="flex flex-col items-center h-full px-8 pt-20">
+        {/* 로고 */}
+        <div className="mb-4">
+          <Image
+            src="/hanger/logo.png"
+            alt="오늘뭐입지 로고"
+            width={80}
+            height={80}
+            priority
+          />
+        </div>
+
+        {/* 타이틀 */}
+        <h1 className="text-3xl font-bold mb-20">오늘뭐입지</h1>
+
+        {/* SNS 로그인 */}
+        <div className="w-full mb-8">
+          <p className="text-center text-xs text-gray-600 mb-4">
+            SNS 계정으로 간편 가입하기
+          </p>
+          <div className="flex justify-center gap-4">
+            <SnsButton provider="kakao" onClick={HandleKakaoLogin} />
+            <SnsButton provider="google" onClick={HandleGoogleLogin} />
+          </div>
+        </div>
+
+        {/* 구분선 */}
+        <div className="flex items-center w-full mb-10 mt-8">
+          <div className="flex-1 h-px bg-gray-300"></div>
+          <span className="px-4 text-xs text-gray-500">또는</span>
+          <div className="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        {/* 버튼 영역 */}
+        <div className="w-full space-y-4">
+          <Link href="/auth/signin" className="block">
+            <Button className="hover:bg-blue-300">이메일 로그인</Button>
+          </Link>
+          <Link href="/auth/signup" className="block">
+            <Button className="bg-gray-300 hover:bg-gray-400">회원가입</Button>
+          </Link>
+        </div>
       </div>
-      <WeatherDashboard
-        src="/weather/sunny.svg"
-        width={22}
-        height={22}
-        location="강남구 역삼동"
-        condition="맑음"
-      />
     </Frame>
   );
 }
