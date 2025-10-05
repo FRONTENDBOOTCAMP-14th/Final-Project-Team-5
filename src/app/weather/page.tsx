@@ -21,7 +21,7 @@ export default function WeatherDetails() {
         <div className="w-full h-[55px] bg-[#D2E4Fb] flex items-center justify-center">
           <p className="flex gap-4 mr-6">
             <span>9.26</span>
-            <span>오늘</span>
+            <span className="w-[28px] text-center">오늘</span>
           </p>
           <Image
             src="/weather/sunny.svg"
@@ -34,7 +34,7 @@ export default function WeatherDetails() {
         <div className="w-full h-[55px] flex items-center justify-center">
           <p className="flex gap-4 mr-6">
             <span>9.27</span>
-            <span>토</span>
+            <span className="w-[28px] text-center">토</span>
           </p>
           <Image
             src="/weather/sunny.svg"
@@ -47,7 +47,7 @@ export default function WeatherDetails() {
         <div className="w-full h-[55px] flex items-center justify-center">
           <p className="flex gap-4 mr-6">
             <span>9.28</span>
-            <span>일</span>
+            <span className="w-[28px] text-center">일</span>
           </p>
           <Image
             src="/weather/sunny.svg"
@@ -60,7 +60,7 @@ export default function WeatherDetails() {
         <div className="w-full h-[55px] flex items-center justify-center">
           <p className="flex gap-4 mr-6">
             <span>9.29</span>
-            <span>월</span>
+            <span className="w-[28px] text-center">월</span>
           </p>
           <Image
             src="/weather/lightning.svg"
@@ -73,7 +73,7 @@ export default function WeatherDetails() {
         <div className="w-full h-[55px] flex items-center justify-center">
           <p className="flex gap-4 mr-6">
             <span>9.30</span>
-            <span>화</span>
+            <span className="w-[28px] text-center">화</span>
           </p>
           <Image
             src="/weather/rain.svg"
@@ -86,7 +86,7 @@ export default function WeatherDetails() {
         <div className="w-full h-[55px] flex items-center justify-center">
           <p className="flex gap-4 mr-6">
             <span>10.1</span>
-            <span>수</span>
+            <span className="w-[28px] text-center">수</span>
           </p>
           <Image
             src="/weather/cloudy.svg"
@@ -99,7 +99,7 @@ export default function WeatherDetails() {
         <div className="w-full h-[55px] flex items-center justify-center">
           <p className="flex gap-4 mr-6">
             <span>10.2</span>
-            <span>목</span>
+            <span className="w-[28px] text-center">목</span>
           </p>
           <Image
             src="/weather/sunny.svg"
