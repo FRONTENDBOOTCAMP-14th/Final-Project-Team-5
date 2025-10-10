@@ -7,13 +7,13 @@ export default function BottomBar() {
       {/* 왼쪽 버튼 */}
       <button className="w-1/2 h-full flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
         <House className="w-[22px] h-[22px] text-black mb-0.5" />
-        <span className="text-[12px] text-black font-medium">홈</span>
+        <span className="text-[12px] text-black font-medium">Home</span>
       </button>
 
       {/* 오른쪽 버튼 */}
       <button className="w-1/2 h-full flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
         <UserRoundPen className="w-[22px] h-[22px] text-black mb-0.5" />
-        <span className="text-[12px] text-black font-medium">프로필</span>
+        <span className="text-[12px] text-black font-medium">Profile</span>
       </button>
     </div>
   );
