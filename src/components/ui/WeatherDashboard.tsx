@@ -20,7 +20,7 @@ interface ImageProps {
 
 export default function WeatherDashboard(props: ImageProps) {
   return (
-    <div className="w-[340px] h-[228px] p-3 border-2 rounded-2xl mx-auto">
+    <div className="w-[340px] h-[228px] p-3 rounded-2xl mx-auto bg-[#FFFFFF]">
       {/* 위치 및 더보기 버튼 */}
       <div className="flex place-content-between">
         {/* 현재위치 클릭시 내 위치선택 모달창 연결 */}
