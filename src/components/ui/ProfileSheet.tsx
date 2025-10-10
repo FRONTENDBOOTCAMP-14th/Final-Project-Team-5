@@ -17,14 +17,14 @@ export default function ProfileSheet() {
 
   return (
     <motion.div
-      className="relative min-h-screen"
+      className="w-full bg-white"
       drag="y"
       dragConstraints={{ top: 0, bottom: 0 }}
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
     >
       <motion.div
-        className="fixed top-0 left-0 right-0 z-50 bg-white p-4"
+        className="w-full bg-white"
         animate={{ height: isOpen ? '40vh' : '60px' }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
