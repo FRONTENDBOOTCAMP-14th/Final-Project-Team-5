@@ -19,10 +19,14 @@ export default function GetWeatherIcon(condition: string) {
 // 날씨 키워드 매칭시키기
 export function GetWeatherCondition(conditionDescription: string) {
   const d = conditionDescription.trim();
+  const e = conditionDescription.toLowerCase();
 
-  if (d.includes('흐림') || d.includes('구름')) return '흐림';
-  if (d.includes('번개') || d.includes('뇌우')) return '번개';
-  if (d.includes('비')) return '비';
-  if (d.includes('눈')) return '눈';
-  if (d.includes('맑은') || d.includes('맑음')) return '맑음';
+  if (d.includes('흐림') || d.includes('구름') || e.includes('clouds'))
+    return '흐림';
+  if (d.includes('번개') || d.includes('뇌우') || e.includes('thunderstorm'))
+    return '번개';
+  if (d.includes('비') || e.includes('rain')) return '비';
+  if (d.includes('눈') || e.includes('snow')) return '눈';
+  if (d.includes('맑은') || d.includes('맑음') || e.includes('sunny'))
+    return '맑음';
 }
