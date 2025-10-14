@@ -3,7 +3,9 @@
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
 import Input from '@/components/ui/Input';
+import { CreateClient } from '@/libs/supabase/client';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function SignUpPage() {
@@ -13,16 +15,46 @@ export default function SignUpPage() {
   const [name, setName] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | ''>('');
 
-  function HandleSignUp(e: React.FormEvent) {
+  const router = useRouter();
+  const supabase = CreateClient();
+
+  async function HandleSignUp(e: React.FormEvent) {
     e.preventDefault();
 
+    // 비밀번호 확인 검증
     if (password !== passwordConfirm) {
       alert('비밀번호가 일치하지 않습니다.');
       return;
     }
 
-    // Supabase 회원가입 로직 구현
-    console.log('회원가입');
+    // 성별 선택 확인
+    if (!gender) {
+      alert('성별을 선택해주세요.');
+      return;
+    }
+
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username: name,
+            gender: gender,
+          },
+        },
+      });
+
+      if (authError) {
+        throw authError;
+      }
+
+      alert('회원가입이 완료되었습니다!');
+      router.push('/auth/signin');
+    } catch (error: any) {
+      console.error('회원가입 에러:', error);
+      alert(error.message || '회원가입 중 오류가 발생했습니다.');
+    }
   }
 
   return (
