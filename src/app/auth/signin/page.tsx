@@ -3,17 +3,39 @@
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
 import Input from '@/components/ui/Input';
+import { CreateClient } from '@/libs/supabase/client';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  function HandleSignIn(e: React.FormEvent) {
+  const router = useRouter();
+  const supabase = CreateClient();
+
+  async function HandleSignIn(e: React.FormEvent) {
     e.preventDefault();
-    // Supabase 로그인 로직 구현
-    console.log('로그인');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        alert('로그인 성공!');
+        router.push('/'); // 메인 페이지로 이동
+      }
+    } catch (error: any) {
+      console.error('로그인 에러:', error);
+      alert(error.message || '로그인 중 오류가 발생했습니다.');
+    }
   }
 
   return (
