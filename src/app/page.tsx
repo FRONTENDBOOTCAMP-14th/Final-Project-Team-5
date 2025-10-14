@@ -3,18 +3,47 @@
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
 import SnsButton from '@/components/ui/SnsButton';
+import { CreateClient } from '@/libs/supabase/client';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function LandingPage() {
-  function HandleKakaoLogin() {
-    // 카카오 로그인 로직 구현
-    console.log('카카오 로그인');
+  const supabase = CreateClient();
+
+  async function HandleKakaoLogin() {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'kakao',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error('카카오 로그인 에러:', error);
+      alert(error.message || '카카오 로그인 중 오류가 발생했습니다.');
+    }
   }
 
-  function HandleGoogleLogin() {
-    // 구글 로그인 로직 구현
-    console.log('구글 로그인');
+  async function HandleGoogleLogin() {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error('구글 로그인 에러:', error);
+      alert(error.message || '구글 로그인 중 오류가 발생했습니다.');
+    }
   }
 
   return (

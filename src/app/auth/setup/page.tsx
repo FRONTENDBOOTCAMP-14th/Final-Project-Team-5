@@ -6,26 +6,48 @@ import Input from '@/components/ui/Input';
 import { CreateClient } from '@/libs/supabase/client';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function SignUpPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
+export default function SetupPage() {
   const [name, setName] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | ''>('');
+  const [userId, setUserId] = useState('');
 
   const router = useRouter();
   const supabase = CreateClient();
 
-  async function HandleSignUp(e: React.FormEvent) {
-    e.preventDefault();
+  useEffect(() => {
+    async function GetUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    // 비밀번호 확인 검증
-    if (password !== passwordConfirm) {
-      alert('비밀번호가 일치하지 않습니다.');
-      return;
+      if (!user) {
+        // 로그인 안 되어 있으면 랜딩으로
+        router.push('/');
+        return;
+      }
+
+      setUserId(user.id);
+
+      // 이미 설정 완료했는지 확인
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('gender, username')
+        .eq('id', user.id)
+        .single();
+
+      // if (profile?.gender && profile?.username) {
+      //   // 이미 완료했으면 메인으로
+      //   router.push('/main/cloth');
+      // }
     }
+
+    GetUser();
+  }, []);
+
+  async function HandleComplete(e: React.FormEvent) {
+    e.preventDefault();
 
     // 성별 선택 확인
     if (!gender) {
@@ -34,65 +56,31 @@ export default function SignUpPage() {
     }
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            username: name,
-            gender: gender,
-          },
-        },
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          username: name,
+          gender: gender,
+        })
+        .eq('id', userId);
 
-      if (authError) {
-        throw authError;
+      if (error) {
+        throw error;
       }
 
-      alert('회원가입이 완료되었습니다!');
-      router.push('/auth/signin');
+      alert('가입이 완료되었습니다!');
+      router.push('/main/cloth');
     } catch (error: any) {
-      console.error('회원가입 에러:', error);
-      alert(error.message || '회원가입 중 오류가 발생했습니다.');
+      console.error('정보 저장 에러:', error);
+      alert(error.message || '정보 저장 중 오류가 발생했습니다.');
     }
   }
 
   return (
     <Frame>
       <div className="flex flex-col h-full px-8 py-6">
-        {/* 회원가입 폼 */}
-        <form onSubmit={HandleSignUp} className="flex-1 flex flex-col">
-          <div className="space-y-4 mb-auto">
-            <Input
-              id="email"
-              type="email"
-              label="이메일"
-              placeholder="이메일을 입력해주세요."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-
-            <Input
-              id="password"
-              type="password"
-              label="패스워드"
-              placeholder="비밀번호를 입력해주세요."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-
-            <Input
-              id="passwordConfirm"
-              type="password"
-              label="패스워드 확인"
-              placeholder="비밀번호를 한번 더 입력해주세요."
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              required
-            />
-
+        <form onSubmit={HandleComplete} className="flex-1 flex flex-col">
+          <div className="space-y-6 grow flex flex-col justify-center max-w-md w-full mx-auto">
             <Input
               id="name"
               type="text"
