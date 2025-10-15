@@ -23,8 +23,8 @@ export default async function GetWeather(
 
 // 예측 일기예보 데이터 불러오기
 export async function GetWeatherForecast(
-  lat: number | null,
-  lon: number | null
+  lat: number | undefined,
+  lon: number | undefined
 ) {
   const URL = `${FORECAST_BASE_URL}lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`;
 
