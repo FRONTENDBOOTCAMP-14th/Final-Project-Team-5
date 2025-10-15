@@ -5,9 +5,9 @@ import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { Frame, WeatherDashboard } from '@/components';
-import useGeoLocation from '../../hooks/useGeoLocation';
-import { GetWeatherForecast } from '../../libs/getWeather';
-import GetWeatherIcon from '../../utils/getWeatherCondition';
+import useGeoLocation from '@/hooks/useGeoLocation';
+import { GetWeatherForecast } from '@/libs/getWeather';
+import GetWeatherIcon from '@/utils/getWeatherCondition';
 
 export default function WeatherDetails() {
   const [date, setDate] = useState<any[]>([]);
