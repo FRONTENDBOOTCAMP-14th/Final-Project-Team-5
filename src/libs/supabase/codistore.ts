@@ -5,12 +5,13 @@ export interface Codi {
   imageUrl: string;
   liked: boolean;
   isMyCodi?: boolean;
+  hashtag?: string;
 }
 
 interface CodiStore {
   codiList: Codi[];
   toggleLike: (id: number) => void;
-  addCodi: (imageUrl: string) => void;
+  addCodi: (data: { imageUrl: string | null; hashtag?: string }) => void;
   removeCodi: (id: number) => void;
 }
 
@@ -49,11 +50,17 @@ export const useCodiStore = create<CodiStore>((set) => ({
           : codi
       ),
     })),
-  addCodi: (imageUrl: string) =>
+  addCodi: (data) =>
     set((state) => ({
       codiList: [
         ...state.codiList,
-        { id: Date.now(), imageUrl, liked: false, isMyCodi: true },
+        {
+          id: Date.now(),
+          imageUrl: data.imageUrl ?? '',
+          liked: false,
+          isMyCodi: true,
+          hashtag: data.hashtag ?? '',
+        },
       ],
     })),
   removeCodi: (id: number) =>
