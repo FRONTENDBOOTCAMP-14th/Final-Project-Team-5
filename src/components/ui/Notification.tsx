@@ -1,8 +1,8 @@
 'use client';
 
-import { CircleAlert } from 'lucide-react';
 import type { ComponentProps, PropsWithChildren, ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
+import { CircleAlert } from 'lucide-react';
 
 type CommonProps = PropsWithChildren<{
   open?: boolean;
@@ -24,7 +24,6 @@ export default function Notification({
   button2,
   open = false,
   onClose,
-  children,
 }: DialogProps) {
   // dialog DOM 참조
   const dialogRef = useRef<HTMLDialogElement>(null);
