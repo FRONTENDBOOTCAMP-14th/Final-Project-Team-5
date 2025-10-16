@@ -2,17 +2,16 @@
 
 'use client';
 
+import { useState } from 'react';
+import { Toaster } from 'sonner';
 import Frame from '@/components/ui/Frame';
 import ImageForm from '@/components/ui/ImageForm';
 import ImageList from '@/components/ui/ImageList';
 import Modal from '@/components/ui/Modal';
-import Spinner from '@/components/ui/Spinner';
-
 import Notification from '@/components/ui/Notification';
 import OnboardingModal from '@/components/ui/OnboardingModal';
+import Spinner from '@/components/ui/Spinner';
 import WeatherDashboard from '@/components/ui/WeatherDashboard';
-import { useState } from 'react';
-import { Toaster } from 'sonner';
 
 export default function Home() {
   // 알림창 다이얼로그 기능 테스트용 상태
@@ -22,7 +21,7 @@ export default function Home() {
 
   return (
     <Frame>
-      <Modal></Modal>
+      <Modal />
       {/* 알림창 오픈확인을 위한 임시버튼 */}
       <button
         className="border rounded-xl p-1 cursor-pointer"
@@ -40,7 +39,7 @@ export default function Home() {
       />
       <Toaster position="top-center" />
       <ImageForm />
-      <Spinner size="sm" className="py-2"></Spinner>
+      <Spinner size="sm" className="py-2" />
       <ImageList src="/" />
       <WeatherDashboard
       // src="/weather/sunny.svg"

@@ -1,36 +1,36 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import Button from '@/components/ui/Button'
-import Frame from '@/components/ui/Frame'
-import Input from '@/components/ui/Input'
-import { CreateClient } from '@/libs/supabase/client'
+import { useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
+import Frame from '@/components/ui/Frame';
+import Input from '@/components/ui/Input';
+import { CreateClient } from '@/libs/supabase/client';
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [name, setName] = useState('')
-  const [gender, setGender] = useState<'male' | 'female' | ''>('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [name, setName] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | ''>('');
 
-  const router = useRouter()
-  const supabase = CreateClient()
+  const router = useRouter();
+  const supabase = CreateClient();
 
   async function HandleSignUp(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     // 비밀번호 확인 검증
     if (password !== passwordConfirm) {
-      alert('비밀번호가 일치하지 않습니다.')
-      return
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
     }
 
     // 성별 선택 확인
     if (!gender) {
-      alert('성별을 선택해주세요.')
-      return
+      alert('성별을 선택해주세요.');
+      return;
     }
 
     try {
@@ -43,26 +43,26 @@ export default function SignUpPage() {
             gender,
           },
         },
-      })
+      });
 
       if (authError) {
-        throw authError
+        throw authError;
       }
 
-      alert('회원가입이 완료되었습니다!')
-      router.push('/auth/signin')
+      alert('회원가입이 완료되었습니다!');
+      router.push('/auth/signin');
     } catch (error: unknown) {
-      console.error('회원가입 에러:', error)
+      console.error('회원가입 에러:', error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : '회원가입 중 오류가 발생했습니다.'
-      alert(errorMessage)
+          : '회원가입 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   }
 
   function HandleSubmit(e: React.FormEvent) {
-    void HandleSignUp(e)
+    void HandleSignUp(e);
   }
 
   return (
@@ -161,5 +161,5 @@ export default function SignUpPage() {
         </form>
       </div>
     </Frame>
-  )
+  );
 }

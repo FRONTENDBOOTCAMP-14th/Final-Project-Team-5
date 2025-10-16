@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { CircleCheck } from 'lucide-react'
-import Button from '@/components/ui/Button'
+import { useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CircleCheck } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 interface OnboardingModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export default function OnboardingModal({
@@ -16,11 +16,11 @@ export default function OnboardingModal({
 }: OnboardingModalProps) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'auto'
+      document.body.style.overflow = 'auto';
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
@@ -66,7 +66,7 @@ export default function OnboardingModal({
         </div>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
 {

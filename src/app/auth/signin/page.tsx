@@ -1,49 +1,49 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import Button from '@/components/ui/Button'
-import Frame from '@/components/ui/Frame'
-import Input from '@/components/ui/Input'
-import { CreateClient } from '@/libs/supabase/client'
+import { useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
+import Frame from '@/components/ui/Frame';
+import Input from '@/components/ui/Input';
+import { CreateClient } from '@/libs/supabase/client';
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const router = useRouter()
-  const supabase = CreateClient()
+  const router = useRouter();
+  const supabase = CreateClient();
 
   async function HandleSignIn(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      })
+      });
 
       if (error) {
-        throw error
+        throw error;
       }
 
       if (data.user) {
-        alert('로그인 성공!')
-        router.push('/')
+        alert('로그인 성공!');
+        router.push('/');
       }
     } catch (error: unknown) {
-      console.error('로그인 에러:', error)
+      console.error('로그인 에러:', error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : '로그인 중 오류가 발생했습니다.'
-      alert(errorMessage)
+          : '로그인 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   }
 
   function HandleSubmit(e: React.FormEvent) {
-    void HandleSignIn(e)
+    void HandleSignIn(e);
   }
 
   return (
@@ -91,5 +91,5 @@ export default function SignInPage() {
         </form>
       </div>
     </Frame>
-  )
+  );
 }

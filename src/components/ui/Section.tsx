@@ -1,5 +1,5 @@
-import { tw } from '@/utils';
 import type { ComponentProps, ReactNode } from 'react';
+import { tw } from '@/utils';
 
 type Props = Omit<ComponentProps<'section'>, 'title'> & {
   title: ReactNode;
