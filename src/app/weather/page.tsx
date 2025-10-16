@@ -55,8 +55,8 @@ export default function WeatherDetails() {
           const [, items] = Object.entries(dailyGroup)[j];
           mins = items.map((item) => item.main.temp_min);
           maxs = items.map((item) => item.main.temp_max);
-          const dayMinTemp = Math.ceil(Math.min(...mins));
-          const dayMaxTemp = Math.ceil(Math.max(...maxs));
+          const dayMinTemp = Math.round(Math.min(...mins));
+          const dayMaxTemp = Math.round(Math.max(...maxs));
           minsArray.push(dayMinTemp);
           maxsArray.push(dayMaxTemp);
 
