@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import Button from '@/components/ui/Button';
-import Frame from '@/components/ui/Frame';
-import SnsButton from '@/components/ui/SnsButton';
-import { CreateClient } from '@/libs/supabase/client';
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from 'next/image'
+import Link from 'next/link'
+import Button from '@/components/ui/Button'
+import Frame from '@/components/ui/Frame'
+import SnsButton from '@/components/ui/SnsButton'
+import { CreateClient } from '@/libs/supabase/client'
 
 export default function LandingPage() {
-  const supabase = CreateClient();
+  const supabase = CreateClient()
 
   async function HandleKakaoLogin() {
     try {
@@ -17,14 +17,18 @@ export default function LandingPage() {
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
-      });
+      })
 
       if (error) {
-        throw error;
+        throw error
       }
-    } catch (error: any) {
-      console.error('카카오 로그인 에러:', error);
-      alert(error.message || '카카오 로그인 중 오류가 발생했습니다.');
+    } catch (error: unknown) {
+      console.error('카카오 로그인 에러:', error)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '카카오 로그인 중 오류가 발생했습니다.'
+      alert(errorMessage)
     }
   }
 
@@ -35,15 +39,27 @@ export default function LandingPage() {
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
-      });
+      })
 
       if (error) {
-        throw error;
+        throw error
       }
-    } catch (error: any) {
-      console.error('구글 로그인 에러:', error);
-      alert(error.message || '구글 로그인 중 오류가 발생했습니다.');
+    } catch (error: unknown) {
+      console.error('구글 로그인 에러:', error)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '구글 로그인 중 오류가 발생했습니다.'
+      alert(errorMessage)
     }
+  }
+
+  function HandleKakaoClick() {
+    void HandleKakaoLogin()
+  }
+
+  function HandleGoogleClick() {
+    void HandleGoogleLogin()
   }
 
   return (
@@ -69,16 +85,16 @@ export default function LandingPage() {
             SNS 계정으로 간편 가입하기
           </p>
           <div className="flex justify-center gap-4">
-            <SnsButton provider="kakao" onClick={HandleKakaoLogin} />
-            <SnsButton provider="google" onClick={HandleGoogleLogin} />
+            <SnsButton provider="kakao" onClick={HandleKakaoClick} />
+            <SnsButton provider="google" onClick={HandleGoogleClick} />
           </div>
         </div>
 
         {/* 구분선 */}
         <div className="flex items-center w-full mb-10 mt-8">
-          <div className="flex-1 h-px bg-gray-300"></div>
+          <div className="flex-1 h-px bg-gray-300" />
           <span className="px-4 text-xs text-gray-500">또는</span>
-          <div className="flex-1 h-px bg-gray-300"></div>
+          <div className="flex-1 h-px bg-gray-300" />
         </div>
 
         {/* 버튼 영역 */}
@@ -92,5 +108,5 @@ export default function LandingPage() {
         </div>
       </div>
     </Frame>
-  );
+  )
 }

@@ -1,58 +1,55 @@
-'use client';
+'use client'
 
-import Button from '@/components/ui/Button';
-import Frame from '@/components/ui/Frame';
-import Input from '@/components/ui/Input';
-import { CreateClient } from '@/libs/supabase/client';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import Button from '@/components/ui/Button'
+import Frame from '@/components/ui/Frame'
+import Input from '@/components/ui/Input'
+import { CreateClient } from '@/libs/supabase/client'
 
 export default function SetupPage() {
-  const [name, setName] = useState('');
-  const [gender, setGender] = useState<'male' | 'female' | ''>('');
-  const [userId, setUserId] = useState('');
+  const [name, setName] = useState('')
+  const [gender, setGender] = useState<'male' | 'female' | ''>('')
+  const [userId, setUserId] = useState('')
 
-  const router = useRouter();
-  const supabase = CreateClient();
+  const router = useRouter()
+  const supabase = CreateClient()
 
   useEffect(() => {
     async function GetUser() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getUser()
 
       if (!user) {
-        // 로그인 안 되어 있으면 랜딩으로
-        router.push('/');
-        return;
+        router.push('/')
+        return
       }
 
-      setUserId(user.id);
+      setUserId(user.id)
 
       // 이미 설정 완료했는지 확인
-      const { data: profile } = await supabase
+      const { data: _profile } = await supabase
         .from('profiles')
         .select('gender, username')
         .eq('id', user.id)
-        .single();
+        .single()
 
-      // if (profile?.gender && profile?.username) {
-      //   // 이미 완료했으면 메인으로
+      // if (_profile?.gender && _profile?.username) {
       //   router.push('/main/cloth');
       // }
     }
 
-    GetUser();
-  }, []);
+    void GetUser()
+  }, [router, supabase])
 
   async function HandleComplete(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
 
-    // 성별 선택 확인
     if (!gender) {
-      alert('성별을 선택해주세요.');
-      return;
+      alert('성별을 선택해주세요.')
+      return
     }
 
     try {
@@ -60,26 +57,34 @@ export default function SetupPage() {
         .from('profiles')
         .update({
           username: name,
-          gender: gender,
+          gender,
         })
-        .eq('id', userId);
+        .eq('id', userId)
 
       if (error) {
-        throw error;
+        throw error
       }
 
-      alert('가입이 완료되었습니다!');
-      router.push('/main/cloth');
-    } catch (error: any) {
-      console.error('정보 저장 에러:', error);
-      alert(error.message || '정보 저장 중 오류가 발생했습니다.');
+      alert('가입이 완료되었습니다!')
+      router.push('/main/cloth')
+    } catch (error: unknown) {
+      console.error('정보 저장 에러:', error)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '정보 저장 중 오류가 발생했습니다.'
+      alert(errorMessage)
     }
+  }
+
+  function HandleSubmit(e: React.FormEvent) {
+    void HandleComplete(e)
   }
 
   return (
     <Frame>
       <div className="flex flex-col h-full px-8 py-6">
-        <form onSubmit={HandleComplete} className="flex-1 flex flex-col">
+        <form onSubmit={HandleSubmit} className="flex-1 flex flex-col">
           <div className="space-y-6 grow flex flex-col justify-center max-w-md w-full mx-auto">
             <Input
               id="name"
@@ -141,5 +146,5 @@ export default function SetupPage() {
         </form>
       </div>
     </Frame>
-  );
+  )
 }

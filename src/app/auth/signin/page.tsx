@@ -1,48 +1,56 @@
-'use client';
+'use client'
 
-import Button from '@/components/ui/Button';
-import Frame from '@/components/ui/Frame';
-import Input from '@/components/ui/Input';
-import { CreateClient } from '@/libs/supabase/client';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import Button from '@/components/ui/Button'
+import Frame from '@/components/ui/Frame'
+import Input from '@/components/ui/Input'
+import { CreateClient } from '@/libs/supabase/client'
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const router = useRouter();
-  const supabase = CreateClient();
+  const router = useRouter()
+  const supabase = CreateClient()
 
   async function HandleSignIn(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      });
+      })
 
       if (error) {
-        throw error;
+        throw error
       }
 
       if (data.user) {
-        alert('로그인 성공!');
-        router.push('/'); // 메인 페이지로 이동
+        alert('로그인 성공!')
+        router.push('/')
       }
-    } catch (error: any) {
-      console.error('로그인 에러:', error);
-      alert(error.message || '로그인 중 오류가 발생했습니다.');
+    } catch (error: unknown) {
+      console.error('로그인 에러:', error)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '로그인 중 오류가 발생했습니다.'
+      alert(errorMessage)
     }
+  }
+
+  function HandleSubmit(e: React.FormEvent) {
+    void HandleSignIn(e)
   }
 
   return (
     <Frame>
       <div className="flex flex-col h-full px-8 py-8">
         {/* 로그인 폼 */}
-        <form onSubmit={HandleSignIn} className="flex-1 flex flex-col mt-32">
+        <form onSubmit={HandleSubmit} className="flex-1 flex flex-col mt-32">
           <div className="space-y-6 mb-auto">
             <Input
               id="email"
@@ -83,5 +91,5 @@ export default function SignInPage() {
         </form>
       </div>
     </Frame>
-  );
+  )
 }
