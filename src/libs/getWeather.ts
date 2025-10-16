@@ -4,8 +4,8 @@ const FORECAST_BASE_URL = process.env.NEXT_PUBLIC_API_FORECAST_URL;
 
 // 현재 위치 기반 날씨 가져오기
 export default async function GetWeather(
-  lat: number | null,
-  lon: number | null
+  lat: number | undefined,
+  lon: number | undefined
 ) {
   const URL = `${BASE_URL}lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`;
 
@@ -23,8 +23,8 @@ export default async function GetWeather(
 
 // 예측 일기예보 데이터 불러오기
 export async function GetWeatherForecast(
-  lat: number | null,
-  lon: number | null
+  lat: number | undefined,
+  lon: number | undefined
 ) {
   const URL = `${FORECAST_BASE_URL}lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`;
 

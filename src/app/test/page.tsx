@@ -41,8 +41,14 @@ export default function Home() {
       <Toaster position="top-center" />
       <ImageForm />
       <Spinner size="sm" className="py-2"></Spinner>
-      <ImageList src1="/" src2="/" />
-
+      <ImageList src="" />
+      <div className="flex gap-4 justify-center p-8">
+        <SnsButton
+          provider="kakao"
+          onClick={() => console.log('카카오 클릭')}
+        />
+        <SnsButton provider="google" onClick={() => console.log('구글 클릭')} />
+      </div>
       <WeatherDashboard
         src="/weather/sunny.svg"
         width={22}
