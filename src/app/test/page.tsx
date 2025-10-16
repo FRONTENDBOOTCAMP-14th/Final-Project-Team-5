@@ -48,7 +48,7 @@ export default function Home() {
       <Toaster position="top-center" />
       <ImageForm />
       <Spinner size="sm" className="py-2"></Spinner>
-      <ImageList src="" />
+      <ImageList src="/" />
       <div className="flex gap-4 justify-center p-8">
         <SnsButton
           provider="kakao"
@@ -56,13 +56,7 @@ export default function Home() {
         />
         <SnsButton provider="google" onClick={() => console.log('구글 클릭')} />
       </div>
-      <WeatherDashboard
-        src="/weather/sunny.svg"
-        width={22}
-        height={22}
-        location="강남구 역삼동"
-        condition="맑음"
-      />
+      <WeatherDashboard />
     </Frame>
   );
 }
