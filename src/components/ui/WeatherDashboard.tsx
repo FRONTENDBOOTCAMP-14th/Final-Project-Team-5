@@ -1,19 +1,19 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { ChevronRight, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import GetLocation from '../../libs/getLocation';
-import GetWeather, { GetWeatherForecast } from '../../libs/getWeather';
+import { toast } from 'sonner';
+import useGeoLocation from '@/hooks/useGeoLocation';
+import GetLocation from '@/libs/getLocation';
+import GetWeather, { GetWeatherForecast } from '@/libs/getWeather';
 import GetWeatherIcon, {
   GetWeatherCondition,
-} from '../../utils/getWeatherCondition';
+} from '@/utils/getWeatherCondition';
 
 export default function WeatherDashboard() {
-  const [lat, setLat] = useState<number | null>(null);
-  const [lon, setLon] = useState<number | null>(null);
   const [locationData, setLocationData] = useState<any | null>(null);
   const [data, setData] = useState<any | null>(null);
   const [locationName, setLocationName] = useState<string | null>(null);
@@ -25,35 +25,29 @@ export default function WeatherDashboard() {
   const [forecastIcon, setForecastIcon] = useState<any[]>([]);
 
   // 현재 위치 가져오기
-  useEffect(() => {
-    function OnGeoOk(position: any) {
-      setLat(position.coords.latitude);
-      setLon(position.coords.longitude);
-    }
-
-    function OnGeoError() {
-      throw new Error('Can not find you!');
-    }
-
-    navigator.geolocation.getCurrentPosition(OnGeoOk, OnGeoError);
-  }, []);
+  const { lat, lon } = useGeoLocation();
 
   // 현재 위치 기반 날씨 가져오기
   useEffect(() => {
     if (!lat || !lon) return;
 
-    (async () => {
+    const abortController = new AbortController();
+
+    async function fetchWeatherData() {
       try {
         const weatherData = await GetWeather(lat, lon);
         setData(weatherData);
-        // console.log('위치함수값', weatherData);
       } catch (error) {
-        console.error('위치불러오기 에러 발생!!');
+        toast.error('위치불러오기 에러 발생!!');
       }
-    })();
-  }, [lat, lon]);
+    }
 
-  // console.log('두번째', data?.main?.temp);
+    fetchWeatherData();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [lat, lon]);
 
   const locationTemp = Math.ceil(data?.main.temp) || '현재 온도';
 
@@ -69,30 +63,48 @@ export default function WeatherDashboard() {
   useEffect(() => {
     if (!lat || !lon) return;
 
-    (async () => {
+    const abortController = new AbortController();
+
+    async function fetchTempData() {
       try {
         const temp = await GetWeatherForecast(lat, lon);
         setTemp(temp);
-        // console.log('예측정보값', temp);
+        console.log('예측정보값', temp);
 
-        let maxArray = [];
-        let minArray = [];
+        const nowTempData = temp.list.filter((item: any) => {
+          const tempData = new Date(item.dt * 1000);
+          const test = String(tempData.toLocaleDateString());
+          const now = String(new Date().toLocaleDateString());
+          return test === now;
+        });
 
-        for (let i = 0; i < temp.list.length; i++) {
-          let max_value = Math.max(temp.list[i].main.temp_max);
+        console.log('나와라', nowTempData);
+
+        const maxArray = [];
+        const minArray = [];
+
+        for (let i = 0; i < nowTempData.length; i++) {
+          const max_value = Math.max(temp.list[i].main.temp_max);
           maxArray.push(max_value);
-          let min_value = Math.min(temp.list[i].main.temp_min);
+          const min_value = Math.min(temp.list[i].main.temp_min);
           minArray.push(min_value);
         }
 
-        let maxTemp = Math.ceil(Math.max(...maxArray));
-        let minTemp = Math.ceil(Math.min(...minArray));
+        const maxTemp = Math.ceil(Math.max(...maxArray));
+        const minTemp = Math.ceil(Math.min(...minArray));
+
         setMaxTemp(maxTemp);
         setMinTemp(minTemp);
       } catch (error) {
-        console.error('날씨 예측정보 에러 발생!');
+        toast.error('날씨 예측정보 에러 발생!');
       }
-    })();
+    }
+
+    fetchTempData();
+
+    return () => {
+      abortController.abort();
+    };
   }, [lat, lon]);
 
   // 일기예보 시간대별 온도 구하기
@@ -131,15 +143,15 @@ export default function WeatherDashboard() {
   useEffect(() => {
     if (!lat || !lon) return;
 
-    (async () => {
-      try {
+    try {
+      (async () => {
         const location = await GetLocation(lat, lon);
         setLocationData(location);
         // console.log('한국어함수값', location);
-      } catch (error) {
-        console.error('한국어 번역 에러 발생!');
-      }
-    })();
+      })();
+    } catch (error) {
+      console.error('한국어 번역 에러 발생!');
+    }
   }, [lat, lon]);
 
   useEffect(() => {
