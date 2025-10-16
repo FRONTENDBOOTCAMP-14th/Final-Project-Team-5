@@ -1,8 +1,123 @@
-import { Frame, WeatherDashboard } from '@/components';
+'use client';
+
+import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
+import { Frame, WeatherDashboard } from '@/components';
+import useGeoLocation from '@/hooks/useGeoLocation';
+import { GetWeatherForecast } from '@/libs/getWeather';
+import GetWeatherIcon from '@/utils/getWeatherCondition';
 
 export default function WeatherDetails() {
+  const [date, setDate] = useState<any[]>([]);
+  const [dayName, setDayName] = useState<any[]>([]);
+  const [dayMinTemp, setDayMinTemp] = useState<number[]>([]);
+  const [dayMaxTemp, setDayMaxTemp] = useState<number[]>([]);
+  const [dayWeatherIcon, setDayWeatherIcon] = useState<any[]>([]);
+
+  interface WeatherData {
+    dt_txt: string;
+    main: {
+      temp: number;
+      temp_min: number;
+      temp_max: number;
+    };
+    weather: {
+      main: string;
+      description: string;
+    }[];
+  }
+
+  // 현재 위치 가져오기
+  const { lat, lon } = useGeoLocation();
+  // 현재 위치의 5일간의 최저, 최고기온 구하기
+  useEffect(() => {
+    if (!lat || !lon) return;
+
+    const abortController = new AbortController();
+
+    async function fetchWeekWeather() {
+      try {
+        const temp = await GetWeatherForecast(lat, lon);
+
+        const dailyGroup: {
+          [daily: string]: WeatherData[];
+        } = {};
+
+        for (let i = 0; i < temp.list.length; i++) {
+          const item = temp.list[i];
+          const weekDate = String(item.dt_txt.split(' ')[0]);
+
+          if (!dailyGroup[weekDate]) {
+            dailyGroup[weekDate] = [];
+          }
+          dailyGroup[weekDate].push(item);
+        }
+
+        // 하루의 최저, 최고 기온 구하기
+        let mins;
+        let maxs;
+        const minsArray = [];
+        const maxsArray = [];
+
+        let weatherConditions;
+        let weatherCondition;
+        const weatherConditionArray = [];
+
+        for (let j = 0; j < Object.entries(dailyGroup).length; j++) {
+          const [, items] = Object.entries(dailyGroup)[j];
+          mins = items.map((item) => item.main.temp_min);
+          maxs = items.map((item) => item.main.temp_max);
+          const dayMinTemp = Math.ceil(Math.min(...mins));
+          const dayMaxTemp = Math.ceil(Math.max(...maxs));
+          minsArray.push(dayMinTemp);
+          maxsArray.push(dayMaxTemp);
+
+          setDayMinTemp(minsArray);
+          setDayMaxTemp(maxsArray);
+
+          weatherConditions = items.map((item) => item.weather[0].main);
+          weatherCondition = GetWeatherIcon(weatherConditions[0]);
+          weatherConditionArray.push(weatherCondition);
+        }
+        setDayWeatherIcon(weatherConditionArray);
+      } catch (error) {
+        toast.error('날씨 예측정보 에러 발생!');
+      }
+    }
+
+    fetchWeekWeather();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [lat, lon]);
+
+  // 날짜 및 요일 구하기
+  useEffect(() => {
+    const times: string[] = [];
+    const names: string[] = [];
+
+    for (let i = 0; i < 6; i++) {
+      const now = new Date();
+      now.setDate(now.getDate() + i);
+
+      const month = String(now.getMonth() + 1);
+      const day = String(now.getDate());
+      const dayNameArray = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayName = dayNameArray[now.getDay()];
+
+      const formattedDate = `${month}.${day}`;
+      const formattedDayName = `${dayName}`;
+
+      times.push(formattedDate);
+      names.push(formattedDayName);
+    }
+    setDate(times);
+    setDayName(names);
+  }, []);
+
   return (
     <Frame>
       <ArrowLeft className="ml-11 mt-20 mb-4" />
@@ -12,97 +127,32 @@ export default function WeatherDetails() {
         <p className="text-[18px] font-medium text-left text-nowrap mt-7 mb-5">
           앞으로 7일 동안은 이런 날씨에요!
         </p>
-        <div className="w-full h-[55px] bg-[#D2E4Fb] flex items-center justify-center">
-          <p className="flex gap-4 mr-6">
-            <span>9.26</span>
-            <span className="w-[28px] text-center">오늘</span>
-          </p>
-          <Image
-            src="/weather/sunny.svg"
-            alt="날씨아이콘"
-            width={22}
-            height={22}
-          />
-          <p className="flex ml-6">최저 20°C ~ 최고 27°C</p>
-        </div>
-        <div className="w-full h-[55px] flex items-center justify-center">
-          <p className="flex gap-4 mr-6">
-            <span>9.27</span>
-            <span className="w-[28px] text-center">토</span>
-          </p>
-          <Image
-            src="/weather/sunny.svg"
-            alt="날씨아이콘"
-            width={22}
-            height={22}
-          />
-          <p className="flex ml-6">최저 20°C ~ 최고 27°C</p>
-        </div>
-        <div className="w-full h-[55px] flex items-center justify-center">
-          <p className="flex gap-4 mr-6">
-            <span>9.28</span>
-            <span className="w-[28px] text-center">일</span>
-          </p>
-          <Image
-            src="/weather/sunny.svg"
-            alt="날씨아이콘"
-            width={22}
-            height={22}
-          />
-          <p className="flex ml-6">최저 20°C ~ 최고 27°C</p>
-        </div>
-        <div className="w-full h-[55px] flex items-center justify-center">
-          <p className="flex gap-4 mr-6">
-            <span>9.29</span>
-            <span className="w-[28px] text-center">월</span>
-          </p>
-          <Image
-            src="/weather/lightning.svg"
-            alt="날씨아이콘"
-            width={22}
-            height={22}
-          />
-          <p className="flex ml-6">최저 20°C ~ 최고 27°C</p>
-        </div>
-        <div className="w-full h-[55px] flex items-center justify-center">
-          <p className="flex gap-4 mr-6">
-            <span>9.30</span>
-            <span className="w-[28px] text-center">화</span>
-          </p>
-          <Image
-            src="/weather/rain.svg"
-            alt="날씨아이콘"
-            width={22}
-            height={22}
-          />
-          <p className="flex ml-6">최저 20°C ~ 최고 27°C</p>
-        </div>
-        <div className="w-full h-[55px] flex items-center justify-center">
-          <p className="flex gap-4 mr-6">
-            <span>10.1</span>
-            <span className="w-[28px] text-center">수</span>
-          </p>
-          <Image
-            src="/weather/cloudy.svg"
-            alt="날씨아이콘"
-            width={22}
-            height={22}
-          />
-          <p className="flex ml-6">최저 20°C ~ 최고 27°C</p>
-        </div>
-        <div className="w-full h-[55px] flex items-center justify-center">
-          <p className="flex gap-4 mr-6">
-            <span>10.2</span>
-            <span className="w-[28px] text-center">목</span>
-          </p>
-          <Image
-            src="/weather/sunny.svg"
-            alt="날씨아이콘"
-            width={22}
-            height={22}
-          />
-          <p className="flex ml-6">최저 20°C ~ 최고 27°C</p>
-        </div>
+
+        {date.map((d: string, i: number) => (
+          <div
+            key={d}
+            className={`w-full h-[55px] ${i === 0 ? 'bg-[#D2E4Fb]' : ''} flex items-center justify-center`}
+          >
+            <p className="flex gap-4 mr-6">
+              <span>{d}</span>
+              <span className="w-[28px] text-center">
+                {i === 0 ? '오늘' : dayName[i]}
+              </span>
+            </p>
+            {dayWeatherIcon[i] && (
+              <Image
+                src={dayWeatherIcon[i]}
+                alt="날씨아이콘"
+                width={22}
+                height={22}
+              />
+            )}
+            <p className="flex ml-6 w-[155px] text-nowrap justify-between">
+              <span>최저 {dayMinTemp[i]}°C</span>~
+              <span>최고 {dayMaxTemp[i]}°C</span>
+            </p>
+          </div>
+        ))}
       </section>
     </Frame>
   );

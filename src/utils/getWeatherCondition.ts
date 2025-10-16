@@ -1,7 +1,7 @@
 // 날씨 키워드별 아이콘 매칭시키기
 export default function GetWeatherIcon(condition: string) {
   switch (condition.toLowerCase()) {
-    case 'claer':
+    case 'clear':
       return '/weather/sunny.svg';
     case 'clouds':
       return '/weather/cloudy.svg';
