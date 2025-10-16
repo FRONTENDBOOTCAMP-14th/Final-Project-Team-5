@@ -1,13 +1,17 @@
 'use client';
 
-import { motion, PanInfo } from 'framer-motion';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import type { PanInfo } from 'framer-motion';
 
 export default function ProfileSheet() {
   const [isOpen, setIsOpen] = useState(true);
   const dragThreshold = 80;
 
-  function handleDragEnd(_: any, info: PanInfo) {
+  function handleDragEnd(
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) {
     if (info.offset.y < -dragThreshold) {
       setIsOpen(false);
     } else {
