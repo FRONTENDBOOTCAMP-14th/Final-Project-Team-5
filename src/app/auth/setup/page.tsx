@@ -1,55 +1,55 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import Button from '@/components/ui/Button'
-import Frame from '@/components/ui/Frame'
-import Input from '@/components/ui/Input'
-import { CreateClient } from '@/libs/supabase/client'
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
+import Frame from '@/components/ui/Frame';
+import Input from '@/components/ui/Input';
+import { CreateClient } from '@/libs/supabase/client';
 
 export default function SetupPage() {
-  const [name, setName] = useState('')
-  const [gender, setGender] = useState<'male' | 'female' | ''>('')
-  const [userId, setUserId] = useState('')
+  const [name, setName] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | ''>('');
+  const [userId, setUserId] = useState('');
 
-  const router = useRouter()
-  const supabase = CreateClient()
+  const router = useRouter();
+  const supabase = CreateClient();
 
   useEffect(() => {
     async function GetUser() {
       const {
         data: { user },
-      } = await supabase.auth.getUser()
+      } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push('/')
-        return
+        router.push('/');
+        return;
       }
 
-      setUserId(user.id)
+      setUserId(user.id);
 
       // 이미 설정 완료했는지 확인
       const { data: _profile } = await supabase
         .from('profiles')
         .select('gender, username')
         .eq('id', user.id)
-        .single()
+        .single();
 
       // if (_profile?.gender && _profile?.username) {
       //   router.push('/main/cloth');
       // }
     }
 
-    void GetUser()
-  }, [router, supabase])
+    void GetUser();
+  }, [router, supabase]);
 
   async function HandleComplete(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!gender) {
-      alert('성별을 선택해주세요.')
-      return
+      alert('성별을 선택해주세요.');
+      return;
     }
 
     try {
@@ -59,26 +59,26 @@ export default function SetupPage() {
           username: name,
           gender,
         })
-        .eq('id', userId)
+        .eq('id', userId);
 
       if (error) {
-        throw error
+        throw error;
       }
 
-      alert('가입이 완료되었습니다!')
-      router.push('/main/cloth')
+      alert('가입이 완료되었습니다!');
+      router.push('/main/cloth');
     } catch (error: unknown) {
-      console.error('정보 저장 에러:', error)
+      console.error('정보 저장 에러:', error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : '정보 저장 중 오류가 발생했습니다.'
-      alert(errorMessage)
+          : '정보 저장 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   }
 
   function HandleSubmit(e: React.FormEvent) {
-    void HandleComplete(e)
+    void HandleComplete(e);
   }
 
   return (
@@ -146,5 +146,5 @@ export default function SetupPage() {
         </form>
       </div>
     </Frame>
-  )
+  );
 }

@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import Link from 'next/link'
-import Button from '@/components/ui/Button'
-import Frame from '@/components/ui/Frame'
-import SnsButton from '@/components/ui/SnsButton'
-import { CreateClient } from '@/libs/supabase/client'
+import Image from 'next/image';
+import Link from 'next/link';
+import Button from '@/components/ui/Button';
+import Frame from '@/components/ui/Frame';
+import SnsButton from '@/components/ui/SnsButton';
+import { CreateClient } from '@/libs/supabase/client';
 
 export default function LandingPage() {
-  const supabase = CreateClient()
+  const supabase = CreateClient();
 
   async function HandleKakaoLogin() {
     try {
@@ -17,18 +17,18 @@ export default function LandingPage() {
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
-      })
+      });
 
       if (error) {
-        throw error
+        throw error;
       }
     } catch (error: unknown) {
-      console.error('카카오 로그인 에러:', error)
+      console.error('카카오 로그인 에러:', error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : '카카오 로그인 중 오류가 발생했습니다.'
-      alert(errorMessage)
+          : '카카오 로그인 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   }
 
@@ -39,27 +39,27 @@ export default function LandingPage() {
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
-      })
+      });
 
       if (error) {
-        throw error
+        throw error;
       }
     } catch (error: unknown) {
-      console.error('구글 로그인 에러:', error)
+      console.error('구글 로그인 에러:', error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : '구글 로그인 중 오류가 발생했습니다.'
-      alert(errorMessage)
+          : '구글 로그인 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   }
 
   function HandleKakaoClick() {
-    void HandleKakaoLogin()
+    void HandleKakaoLogin();
   }
 
   function HandleGoogleClick() {
-    void HandleGoogleLogin()
+    void HandleGoogleLogin();
   }
 
   return (
@@ -108,5 +108,5 @@ export default function LandingPage() {
         </div>
       </div>
     </Frame>
-  )
+  );
 }
