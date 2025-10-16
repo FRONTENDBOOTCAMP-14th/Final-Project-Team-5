@@ -42,19 +42,12 @@ export default function Home() {
       <ImageForm />
       <Spinner size="sm" className="py-2"></Spinner>
       <ImageList src="/" />
-      <div className="flex gap-4 justify-center p-8">
-        <SnsButton
-          provider="kakao"
-          onClick={() => console.log('카카오 클릭')}
-        />
-        <SnsButton provider="google" onClick={() => console.log('구글 클릭')} />
-      </div>
       <WeatherDashboard
-        src="/weather/sunny.svg"
-        width={22}
-        height={22}
-        location="강남구 역삼동"
-        condition="맑음"
+      // src="/weather/sunny.svg"
+      // width={22}
+      // height={22}
+      // location="강남구 역삼동"
+      // condition="맑음"
       />
       <OnboardingModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </Frame>
