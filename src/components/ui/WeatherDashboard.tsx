@@ -16,7 +16,7 @@ import GetWeatherIcon, {
 
 export default function WeatherDashboard() {
   const [locationData, setLocationData] = useState<LocationData | null>(null);
-  const [data, setData] = useState<WeatherData | undefined>();
+  const [data, setData] = useState<WeatherData>();
   const [locationName, setLocationName] = useState<string | undefined>('');
   const [temp, setTemp] = useState<TempData | null>(null);
   const [maxTemp, setMaxTemp] = useState<number | null>(null);
