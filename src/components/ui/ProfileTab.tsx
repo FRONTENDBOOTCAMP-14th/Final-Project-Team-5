@@ -9,11 +9,11 @@ export default function ProfileTab() {
   const [activeTab, setActiveTab] = useState<'favorite' | 'my'>('favorite');
 
   return (
-    <div className="w-full max-w-md mx-auto p-4">
+    <div className="w-full max-w-md mx-auto p-4 pb-[72px]">
       <div className="flex">
         <button
           onClick={() => setActiveTab('favorite')}
-          className={`w-1/2 pb-2 text-center font-mideum transition-colors ${
+          className={`w-1/2 pb-2 text-center font-medium transition-colors ${
             activeTab === 'favorite'
               ? 'text-blue-500 font-semibold'
               : 'text-gray-500'
@@ -23,7 +23,7 @@ export default function ProfileTab() {
         </button>
         <button
           onClick={() => setActiveTab('my')}
-          className={`w-1/2 pb-2 text-center font-mideum transition-colors ${
+          className={`w-1/2 pb-2 text-center font-medium transition-colors ${
             activeTab === 'my' ? 'text-blue-500 font-semibold' : 'text-gray-500'
           }`}
         >
@@ -31,11 +31,7 @@ export default function ProfileTab() {
         </button>
       </div>
       <div>
-        {activeTab === 'favorite' ? (
-          <FavoriteCodiList codiList={codiList} />
-        ) : (
-          <MyCodiList codiList={codiList} />
-        )}
+        {activeTab === 'favorite' ? <FavoriteCodiList /> : <MyCodiList />}
       </div>
     </div>
   );
