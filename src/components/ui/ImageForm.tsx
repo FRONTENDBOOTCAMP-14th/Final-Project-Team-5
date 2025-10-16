@@ -1,13 +1,13 @@
 'use client';
 
-import { ArrowLeft, ImageUp } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { ArrowLeft, ImageUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCodiStore } from '../../libs/supabase/codistore';
 
-type Props = {
+interface Props {
   onBack?: () => void;
-};
+}
 
 export default function ImageForm({ onBack }: Props) {
   const { addCodi } = useCodiStore();
@@ -55,7 +55,7 @@ export default function ImageForm({ onBack }: Props) {
     try {
       setIsUploading(true);
       //supabase 업로드 로직
-      await addCodi({ imageUrl: previewImage, hashtag: trimmedHashtag });
+      addCodi({ imageUrl: previewImage, hashtag: trimmedHashtag });
 
       // 실제 업로드 성공시 알림
       toast.success('사진 업로드가 완료되었습니다!');
@@ -67,6 +67,7 @@ export default function ImageForm({ onBack }: Props) {
 
       if (onBack) onBack();
     } catch (error) {
+      console.error(error);
       setError(true);
       toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
     } finally {
@@ -75,12 +76,15 @@ export default function ImageForm({ onBack }: Props) {
   };
 
   return (
-    <form className="flex flex-col items-center gap-3" onSubmit={handleUpload}>
+    <form
+      className="flex flex-col items-center gap-3"
+      onSubmit={(e) => void handleUpload(e)}
+    >
       {onBack && (
         <button
           type="button"
           onClick={onBack}
-          className="self-start flex items-center justify-center  pl-16"
+          className="self-start flex items-center justify-center pl-16"
         >
           <ArrowLeft />
         </button>
@@ -92,7 +96,9 @@ export default function ImageForm({ onBack }: Props) {
           <img
             src={previewImage}
             alt="이미지 미리보기"
-            className="w-[135px] h-[135px] object-contain rounded-xl"
+            width={135}
+            height={135}
+            className="object-contain rounded-xl"
           />
         ) : (
           <ImageUp size={74} aria-hidden="true" className="mt-8" />
