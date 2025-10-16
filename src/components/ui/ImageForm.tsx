@@ -3,8 +3,10 @@
 import { ImageUp } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { useCodiStore } from '../../libs/supabase/codistore';
 
 export default function ImageForm() {
+  const { addCodi } = useCodiStore();
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -39,6 +41,7 @@ export default function ImageForm() {
     }
 
     setIsUploading(true);
+    addCodi(previewImage);
 
     // 실제 업로드 성공시 알림
     toast.success('사진 업로드가 완료되었습니다!');
