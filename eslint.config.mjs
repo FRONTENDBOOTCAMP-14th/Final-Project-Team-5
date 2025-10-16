@@ -1,20 +1,20 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import tseslint from '@typescript-eslint/eslint-plugin'
-import tsparser from '@typescript-eslint/parser'
-import importPlugin from 'eslint-plugin-import'
-import prettier from 'eslint-plugin-prettier'
-import reactHooks from 'eslint-plugin-react-hooks'
-import globals from 'globals'
-import { dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { FlatCompat } from '@eslint/eslintrc';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
+import importPlugin from 'eslint-plugin-import';
+import prettier from 'eslint-plugin-prettier';
+import reactHooks from 'eslint-plugin-react-hooks';
+import globals from 'globals';
 
-const isProductionMode = process.env.NODE_ENV === 'production'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const isProductionMode = process.env.NODE_ENV === 'production';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-})
+});
 
 const eslintConfig = [
   // Next.js 및 TypeScript 관련 규칙 확장
@@ -311,6 +311,6 @@ const eslintConfig = [
       'bun.lock',
     ],
   },
-]
+];
 
-export default eslintConfig
+export default eslintConfig;
