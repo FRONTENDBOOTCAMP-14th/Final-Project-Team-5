@@ -4,30 +4,18 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
+import type { WeatherData } from '@/@types/global.d.ts';
 import { Frame, WeatherDashboard } from '@/components';
 import useGeoLocation from '@/hooks/useGeoLocation';
 import { GetWeatherForecast } from '@/libs/getWeather';
 import GetWeatherIcon from '@/utils/getWeatherCondition';
 
 export default function WeatherDetails() {
-  const [date, setDate] = useState<any[]>([]);
-  const [dayName, setDayName] = useState<any[]>([]);
+  const [date, setDate] = useState<string[]>([]);
+  const [dayName, setDayName] = useState<string[]>([]);
   const [dayMinTemp, setDayMinTemp] = useState<number[]>([]);
   const [dayMaxTemp, setDayMaxTemp] = useState<number[]>([]);
-  const [dayWeatherIcon, setDayWeatherIcon] = useState<any[]>([]);
-
-  interface WeatherData {
-    dt_txt: string;
-    main: {
-      temp: number;
-      temp_min: number;
-      temp_max: number;
-    };
-    weather: {
-      main: string;
-      description: string;
-    }[];
-  }
+  const [dayWeatherIcon, setDayWeatherIcon] = useState<string[]>([]);
 
   // 현재 위치 가져오기
   const { lat, lon } = useGeoLocation();
@@ -41,9 +29,7 @@ export default function WeatherDetails() {
       try {
         const temp = await GetWeatherForecast(lat, lon);
 
-        const dailyGroup: {
-          [daily: string]: WeatherData[];
-        } = {};
+        const dailyGroup: Record<string, WeatherData[]> = {};
 
         for (let i = 0; i < temp.list.length; i++) {
           const item = temp.list[i];
@@ -83,11 +69,12 @@ export default function WeatherDetails() {
         }
         setDayWeatherIcon(weatherConditionArray);
       } catch (error) {
+        console.error(error);
         toast.error('날씨 예측정보 에러 발생!');
       }
     }
 
-    fetchWeekWeather();
+    void fetchWeekWeather();
 
     return () => {
       abortController.abort();
