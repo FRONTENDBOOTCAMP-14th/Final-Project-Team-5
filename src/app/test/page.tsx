@@ -41,7 +41,7 @@ export default function Home() {
       <Toaster position="top-center" />
       <ImageForm />
       <Spinner size="sm" className="py-2"></Spinner>
-      <ImageList src="" />
+      <ImageList src="/" />
       <div className="flex gap-4 justify-center p-8">
         <SnsButton
           provider="kakao"
