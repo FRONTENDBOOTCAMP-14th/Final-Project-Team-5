@@ -1,10 +1,15 @@
 type FrameProps = React.PropsWithChildren<{
   className?: string;
   paddingX?: number; // 좌우 패딩(px 단위)
-  color?: string;    // 그라데이션 색상 (예: "#388BFE" 또는 "rgba(56,139,254,0.5)")
+  color?: string; // 그라데이션 색상 (예: "#388BFE" 또는 "rgba(56,139,254,0.5)")
 }>;
 
-export default function Frame({ children, className = '', paddingX, color }: FrameProps) {
+export default function Frame({
+  children,
+  className = '',
+  paddingX,
+  color,
+}: FrameProps) {
   const hasPadding = typeof paddingX === 'number' && paddingX > 0;
   const hasColor = typeof color === 'string' && color.length > 0;
 
