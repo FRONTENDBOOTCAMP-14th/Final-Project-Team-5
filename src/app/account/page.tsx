@@ -12,17 +12,14 @@ export default function AccountPage() {
 
   function HandlePasswordChange() {
     // 비밀번호 변경
-    console.log('비밀번호 변경');
   }
 
   function HandleLogout() {
     // 로그아웃
-    console.log('로그아웃');
   }
 
   function HandleDeleteAccount() {
     // 회원탈퇴
-    console.log('회원탈퇴');
   }
 
   return (
