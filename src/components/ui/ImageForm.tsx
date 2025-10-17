@@ -2,8 +2,9 @@
 
 import { useRef, useState } from 'react';
 import { ArrowLeft, ImageUp } from 'lucide-react';
+import Image from 'next/image';
 import { toast } from 'sonner';
-import { useCodiStore } from '../../libs/supabase/codistore';
+import { useCodiStore } from '@/libs/supabase/codistore';
 
 interface Props {
   onBack?: () => void;
@@ -12,7 +13,6 @@ interface Props {
 export default function ImageForm({ onBack }: Props) {
   const { addCodi } = useCodiStore();
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState(false);
 
   // 파일명 및 파일이미지 미리보기
   const [fileName, setFileName] = useState('');
@@ -33,9 +33,9 @@ export default function ImageForm({ onBack }: Props) {
   };
 
   // 파일 선택없이 업로드 버튼 클릭시 상태알림
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
 
     const input = fileInputRef.current;
@@ -68,7 +68,6 @@ export default function ImageForm({ onBack }: Props) {
       if (onBack) onBack();
     } catch (error) {
       console.error(error);
-      setError(true);
       toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
     } finally {
       setIsUploading(false);
@@ -76,10 +75,7 @@ export default function ImageForm({ onBack }: Props) {
   };
 
   return (
-    <form
-      className="flex flex-col items-center gap-3"
-      onSubmit={(e) => void handleUpload(e)}
-    >
+    <form className="flex flex-col items-center gap-3" onSubmit={handleUpload}>
       {onBack && (
         <button
           type="button"
@@ -93,7 +89,7 @@ export default function ImageForm({ onBack }: Props) {
       <label htmlFor="imageUpload" className="cursor-pointer">
         {/* 이미지 미리보기 */}
         {previewImage ? (
-          <img
+          <Image
             src={previewImage}
             alt="이미지 미리보기"
             width={135}
