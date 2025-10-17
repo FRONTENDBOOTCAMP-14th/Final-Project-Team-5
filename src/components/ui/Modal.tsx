@@ -1,7 +1,8 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { X } from 'lucide-react';
 
 export default function Modal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +26,7 @@ export default function Modal() {
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-            ></motion.div>
+            />
             <motion.div
               className="relative w-full max-w-md h-[80%] bg-white rounded-t-2xl p-4 flex flex-col"
               initial={{ y: '100%', opacity: 0 }}
@@ -39,7 +40,7 @@ export default function Modal() {
                   onClick={() => setIsOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  ✕
+                  <X size={8} />
                 </button>
               </div>
               <div>{/* 인풋 및 버튼 추가  */}</div>

@@ -1,16 +1,14 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
 import { useCodiStore } from '../../libs/supabase/codistore';
 import ImageForm from './ImageForm';
 import ImageList from './ImageList';
 
 export default function MyCodiList() {
   const { codiList, removeCodi } = useCodiStore();
-  const myCodi = codiList.filter(function (codi) {
-    return codi.isMyCodi;
-  });
+  const myCodi = codiList.filter((codi) => codi.isMyCodi);
   const [showForm, setShowForm] = useState(myCodi.length === 0);
 
   useEffect(() => {

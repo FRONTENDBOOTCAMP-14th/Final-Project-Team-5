@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
+import type { WeatherData, LocationData, TempData } from '@/@types/global.d.ts';
 import useGeoLocation from '@/hooks/useGeoLocation';
 import GetLocation from '@/libs/getLocation';
 import GetWeather, { GetWeatherForecast } from '@/libs/getWeather';
@@ -14,15 +15,15 @@ import GetWeatherIcon, {
 } from '@/utils/getWeatherCondition';
 
 export default function WeatherDashboard() {
-  const [locationData, setLocationData] = useState<any | null>(null);
-  const [data, setData] = useState<any | null>(null);
-  const [locationName, setLocationName] = useState<string | null>(null);
-  const [temp, setTemp] = useState<any | null>(null);
+  const [locationData, setLocationData] = useState<LocationData | null>(null);
+  const [data, setData] = useState<WeatherData | undefined>();
+  const [locationName, setLocationName] = useState<string | undefined>('');
+  const [temp, setTemp] = useState<TempData | null>(null);
   const [maxTemp, setMaxTemp] = useState<number | null>(null);
   const [minTemp, setMinTemp] = useState<number | null>(null);
-  const [forecastTime, setForecastTime] = useState<any[]>([]);
-  const [forecastTemp, setForecastTemp] = useState<any[]>([]);
-  const [forecastIcon, setForecastIcon] = useState<any[]>([]);
+  const [forecastTime, setForecastTime] = useState<string[]>([]);
+  const [forecastTemp, setForecastTemp] = useState<number[]>([]);
+  const [forecastIcon, setForecastIcon] = useState<string[]>([]);
 
   // 현재 위치 가져오기
   const { lat, lon } = useGeoLocation();
@@ -33,23 +34,24 @@ export default function WeatherDashboard() {
 
     const abortController = new AbortController();
 
-    async function fetchWeatherData() {
+    async function FetchWeatherData() {
       try {
         const weatherData = await GetWeather(lat, lon);
         setData(weatherData);
       } catch (error) {
-        toast.error('위치불러오기 에러 발생!!');
+        console.error(error);
+        toast.error('현재 위치를 불러오지 못했습니다!');
       }
     }
 
-    fetchWeatherData();
+    void FetchWeatherData();
 
     return () => {
       abortController.abort();
     };
   }, [lat, lon]);
 
-  const locationTemp = Math.ceil(data?.main.temp) || '현재 온도';
+  const locationTemp = Math.ceil(data?.main?.temp ?? 0) || '현재 온도';
 
   // 날씨에 따른 아이콘 설정
   const condition = data?.weather?.[0]?.main ?? '';
@@ -65,42 +67,40 @@ export default function WeatherDashboard() {
 
     const abortController = new AbortController();
 
-    async function fetchTempData() {
+    async function FetchTempData() {
       try {
         const temp = await GetWeatherForecast(lat, lon);
         setTemp(temp);
-        console.log('예측정보값', temp);
 
-        const nowTempData = temp.list.filter((item: any) => {
-          const tempData = new Date(item.dt * 1000);
-          const test = String(tempData.toLocaleDateString());
-          const now = String(new Date().toLocaleDateString());
-          return test === now;
+        const today = temp.list[0].dt_txt.split(' ')[0];
+
+        const todayWeather = temp.list.filter((d: WeatherData) => {
+          const std = d.dt_txt.split(' ')[0];
+          return std.includes(today);
         });
-
-        console.log('나와라', nowTempData);
 
         const maxArray = [];
         const minArray = [];
 
-        for (let i = 0; i < nowTempData.length; i++) {
+        for (let i = 0; i < todayWeather.length; i++) {
           const max_value = Math.max(temp.list[i].main.temp_max);
           maxArray.push(max_value);
           const min_value = Math.min(temp.list[i].main.temp_min);
           minArray.push(min_value);
         }
 
-        const maxTemp = Math.ceil(Math.max(...maxArray));
-        const minTemp = Math.ceil(Math.min(...minArray));
+        const maxTemp = Math.round(Math.max(...maxArray));
+        const minTemp = Math.round(Math.min(...minArray));
 
         setMaxTemp(maxTemp);
         setMinTemp(minTemp);
       } catch (error) {
-        toast.error('날씨 예측정보 에러 발생!');
+        console.error(error);
+        toast.error('날씨 예측정보를 불러올 수 없습니다!');
       }
     }
 
-    fetchTempData();
+    void FetchTempData();
 
     return () => {
       abortController.abort();
@@ -118,9 +118,11 @@ export default function WeatherDashboard() {
 
       for (let i = 0; i < limit; i++) {
         const unixTime = temp?.list[i]?.dt;
-        const unixToLocalTime = new Date(unixTime * 1000);
-        const localTime = String(unixToLocalTime.getHours());
-        timeArray.push(localTime);
+        if (unixTime !== undefined) {
+          const unixToLocalTime = new Date(unixTime * 1000);
+          const localTime = String(unixToLocalTime.getHours());
+          timeArray.push(localTime);
+        }
 
         const timeTemp = temp?.list[i]?.main?.temp ?? 0;
         tempArray.push(Math.ceil(timeTemp));
@@ -129,10 +131,6 @@ export default function WeatherDashboard() {
         iconArray.push(GetWeatherIcon(timeicon));
       }
     }
-
-    // console.log('원인확인', timeArray);
-    // console.log('온도도도', tempArray);
-    // console.log('아이콘콘', iconArray);
 
     setForecastTime(timeArray);
     setForecastTemp(tempArray);
@@ -143,15 +141,23 @@ export default function WeatherDashboard() {
   useEffect(() => {
     if (!lat || !lon) return;
 
-    try {
-      (async () => {
+    const abortController = new AbortController();
+
+    async function GetLocationData() {
+      try {
         const location = await GetLocation(lat, lon);
         setLocationData(location);
-        // console.log('한국어함수값', location);
-      })();
-    } catch (error) {
-      console.error('한국어 번역 에러 발생!');
+      } catch (error) {
+        console.error(error);
+        toast.error('현재 위치를 한국어로 불러오지 못했습니다!');
+      }
     }
+
+    void GetLocationData();
+
+    return () => {
+      abortController.abort();
+    };
   }, [lat, lon]);
 
   useEffect(() => {
@@ -163,7 +169,6 @@ export default function WeatherDashboard() {
 
     const name = `${area1} ${area2} ${area3}` || '현재 위치';
     setLocationName(name);
-    // console.log('지역:', area1, area2, area3);
   }, [locationData]);
 
   const pathName = usePathname();

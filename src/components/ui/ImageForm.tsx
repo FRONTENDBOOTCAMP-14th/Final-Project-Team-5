@@ -1,18 +1,18 @@
 'use client';
 
-import { ArrowLeft, ImageUp } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { ArrowLeft, ImageUp } from 'lucide-react';
+import Image from 'next/image';
 import { toast } from 'sonner';
-import { useCodiStore } from '../../libs/supabase/codistore';
+import { useCodiStore } from '@/libs/supabase/codistore';
 
-type Props = {
+interface Props {
   onBack?: () => void;
-};
+}
 
 export default function ImageForm({ onBack }: Props) {
   const { addCodi } = useCodiStore();
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState(false);
 
   // 파일명 및 파일이미지 미리보기
   const [fileName, setFileName] = useState('');
@@ -33,9 +33,9 @@ export default function ImageForm({ onBack }: Props) {
   };
 
   // 파일 선택없이 업로드 버튼 클릭시 상태알림
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
 
     const input = fileInputRef.current;
@@ -55,7 +55,7 @@ export default function ImageForm({ onBack }: Props) {
     try {
       setIsUploading(true);
       //supabase 업로드 로직
-      await addCodi({ imageUrl: previewImage, hashtag: trimmedHashtag });
+      addCodi({ imageUrl: previewImage, hashtag: trimmedHashtag });
 
       // 실제 업로드 성공시 알림
       toast.success('사진 업로드가 완료되었습니다!');
@@ -67,7 +67,7 @@ export default function ImageForm({ onBack }: Props) {
 
       if (onBack) onBack();
     } catch (error) {
-      setError(true);
+      console.error(error);
       toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
     } finally {
       setIsUploading(false);
@@ -80,7 +80,7 @@ export default function ImageForm({ onBack }: Props) {
         <button
           type="button"
           onClick={onBack}
-          className="self-start flex items-center justify-center  pl-16"
+          className="self-start flex items-center justify-center pl-16"
         >
           <ArrowLeft />
         </button>
@@ -89,10 +89,12 @@ export default function ImageForm({ onBack }: Props) {
       <label htmlFor="imageUpload" className="cursor-pointer">
         {/* 이미지 미리보기 */}
         {previewImage ? (
-          <img
+          <Image
             src={previewImage}
             alt="이미지 미리보기"
-            className="w-[135px] h-[135px] object-contain rounded-xl"
+            width={135}
+            height={135}
+            className="object-contain rounded-xl"
           />
         ) : (
           <ImageUp size={74} aria-hidden="true" className="mt-8" />
