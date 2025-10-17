@@ -2,15 +2,16 @@
 
 import React from 'react';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-}
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', ...props }, ref) => {
+  ({ className = '', children, ...props }, ref) => {
     const [on, setOn] = React.useState(false);
 
     const base = 'px-1 py-1 font-bold text-xs rounded-full transition-colors';
-    const variant = on ? 'bg-[#EBF7FF] text-[#388BFE] border' : 'bg-white text-black border';
+    const variant = on
+      ? 'bg-[#EBF7FF] text-[#388BFE] border'
+      : 'bg-white text-black border';
 
     return (
       <button
@@ -20,10 +21,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-pressed={on}
         onClick={(e) => {
           props.onClick?.(e);
-          if (!e.defaultPrevented) setOn(v => !v);
+          if (!e.defaultPrevented) setOn((v) => !v);
         }}
         {...props}
       >
+        {children}
       </button>
     );
   }
