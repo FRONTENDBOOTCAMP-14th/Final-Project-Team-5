@@ -2,9 +2,9 @@ export interface WeatherData {
   dt: number;
   dt_txt: string;
   main: {
-    temp: number | undefined;
-    temp_min: number | undefined;
-    temp_max: number | undefined;
+    temp: number;
+    temp_min: number;
+    temp_max: number;
   };
   weather: {
     main: string;
