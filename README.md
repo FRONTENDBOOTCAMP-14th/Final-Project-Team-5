@@ -21,7 +21,8 @@
 | 배포        | <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=Vercel&logoColor=white"/> |
 
 ### 🔗 배포사이트
-**배포 준비중...**
+[<img width="234" height="163" alt="image" src="https://github.com/user-attachments/assets/0a73d419-c646-4428-b1e7-be3a003ff1d7" />
+](https://final-project-team-5-n2d1f3whv-icejacks-projects.vercel.app/)
 
 ### 🔰 프로젝트 팀원 소개
 | 김민지 | 안동원 | 윤정화 | 👑조석근 | 
