@@ -44,7 +44,7 @@ export default function WeatherDashboard() {
       }
     }
 
-    FetchWeatherData();
+    void FetchWeatherData();
 
     return () => {
       abortController.abort();
@@ -72,25 +72,25 @@ export default function WeatherDashboard() {
         const temp = await GetWeatherForecast(lat, lon);
         setTemp(temp);
 
-        const nowTempData = temp.list.filter((item: WeatherData) => {
-          const tempData = new Date(item.dt * 1000);
-          const test = String(tempData.toLocaleDateString());
-          const now = String(new Date().toLocaleDateString());
-          return test === now;
+        const today = temp.list[0].dt_txt.split(' ')[0];
+
+        const todayWeather = temp.list.filter((d: WeatherData) => {
+          const std = d.dt_txt.split(' ')[0];
+          return std.includes(today);
         });
 
         const maxArray = [];
         const minArray = [];
 
-        for (let i = 0; i < nowTempData.length; i++) {
+        for (let i = 0; i < todayWeather.length; i++) {
           const max_value = Math.max(temp.list[i].main.temp_max);
           maxArray.push(max_value);
           const min_value = Math.min(temp.list[i].main.temp_min);
           minArray.push(min_value);
         }
 
-        const maxTemp = Math.ceil(Math.max(...maxArray));
-        const minTemp = Math.ceil(Math.min(...minArray));
+        const maxTemp = Math.round(Math.max(...maxArray));
+        const minTemp = Math.round(Math.min(...minArray));
 
         setMaxTemp(maxTemp);
         setMinTemp(minTemp);
@@ -100,7 +100,7 @@ export default function WeatherDashboard() {
       }
     }
 
-    FetchTempData();
+    void FetchTempData();
 
     return () => {
       abortController.abort();
@@ -153,7 +153,7 @@ export default function WeatherDashboard() {
       }
     }
 
-    GetLocationData();
+    void GetLocationData();
 
     return () => {
       abortController.abort();
