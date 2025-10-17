@@ -21,6 +21,7 @@
 | 배포        | <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=Vercel&logoColor=white"/> |
 
 ### 🔗 배포사이트
+**배포 준비중...**
 
 ### 🔰 프로젝트 팀원 소개
 | 김민지 | 안동원 | 윤정화 | 👑조석근 | 
@@ -30,24 +31,84 @@
 | <div align="center">[<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>](https://github.com/minji-kim0524)</div> | <div align="center">[<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>](https://github.com/dongwonAhn)</div> | <div align="center">[<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>](https://github.com/gomteang2)</div> | <div align="center">[<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>](https://github.com/IceJack)</div> | 
 
 ### 📂 프로젝트 폴더 구조
+**App Router 방식 적용**
 <details> 
 <summary>폴더 구조 보기</summary>
 
 ```
-🌞 **5늘**
+🌞 5늘
+├── 📁 .next
 ├── 📁 .vscode
 │   ├── extention.json
 │   └── settings.json
+├── 📁 node_modules
+├── 🌐 public
 ├── 📁 src
+│   ├── 📁 @types
+│   │   └── global.d.ts
 │   ├── 📁 app
-│   │   ├── fanicon.ico
-│   │   ├── globals.css
+│   │   ├── 📁 api
+│   │   │   ├── 📁 location
+│   │   │   │   └── route.ts
+│   │   ├── 📁 auth
+│   │   │   ├── 📁 callback
+│   │   │   │   └── route.ts
+│   │   │   ├── 📁 setup
+│   │   │   │   └── page.tsx
+│   │   │   ├── 📁 signin
+│   │   │   │   └── page.tsx
+│   │   │   └── 📁 singup
+│   │   │   │   └── page.tsx
+│   │   ├── 📁 profile
+│   │   │   └── page.tsx
+│   │   ├── 📁 weather
+│   │   │   └── page.tsx
 │   │   ├── layout.tsx
 │   │   └── page.tsx
+│   ├── 📁 components
+│   │   ├── 📁 ui
+│   │   │   ├── Button.tsx
+│   │   │   ├── CodiList.tsx
+│   │   │   ├── FavoriteCodiList.tsx
+│   │   │   ├── FilterButton.tsx
+│   │   │   ├── Frame.tsx
+│   │   │   ├── ImageForm.tsx
+│   │   │   ├── ImageList.tsx
+│   │   │   ├── Input.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   ├── MyCodiList.tsx
+│   │   │   ├── NavigationBar.tsx
+│   │   │   ├── Notification.tsx
+│   │   │   ├── OnboardingModal.tsx
+│   │   │   ├── ProfileSheet.tsx
+│   │   │   ├── ProfileTab.tsx
+│   │   │   ├── Section.tsx
+│   │   │   ├── SnsButton.tsx
+│   │   │   ├── Spinner.tsx
+│   │   │   └── WeatherDashboard.tsx
+│   │   └── index.ts
+│   ├── 📁 hooks
+│   │   ├── useGeoLocation.ts
+│   ├── 📁 libs
+│   │   ├── 📁 supabase
+│   │   │   ├── client.ts
+│   │   │   ├── codistore.ts
+│   │   │   ├── database.types.ts
+│   │   │   └── server.ts
+│   │   ├── getLocation.ts
+│   │   └── getWeather.ts
+│   ├── 📁 styles
+│   │   └── main.css
+│   ├── 📁 utils
+│   │   ├── getWeatherCondition.ts
+│   │   ├── index.ts
+│   │   └── tw.ts
+├── (.env.local)
 ├── .gitignore
 ├── .prettierrc
 ├── bun.lock
 ├── eslint.config.mjs
+├── next-env.d.ts
 ├── next.config.ts
 ├── package.json
 ├── postcss.config.mjs
