@@ -75,59 +75,72 @@ export default function ImageForm({ onBack }: Props) {
   };
 
   return (
-    <form className="flex flex-col items-center gap-3" onSubmit={handleUpload}>
+    <>
       {onBack && (
         <button
           type="button"
           onClick={onBack}
-          className="self-start flex items-center justify-center pl-16"
+          className="self-start flex items-center justify-center pl-16 cursor-pointer"
         >
-          <ArrowLeft />
+          <ArrowLeft aria-label="뒤로가기" />
         </button>
       )}
-      {/* 사진 업로드시 클릭하여 진행 */}
-      <label htmlFor="imageUpload" className="cursor-pointer">
-        {/* 이미지 미리보기 */}
-        {previewImage ? (
-          <Image
-            src={previewImage}
-            alt="이미지 미리보기"
-            width={135}
-            height={135}
-            className="object-contain rounded-xl"
-          />
-        ) : (
-          <ImageUp size={74} aria-hidden="true" className="mt-8" />
-        )}
-      </label>
-      <input
-        type="file"
-        accept="image/*"
-        id="imageUpload"
-        className="hidden"
-        disabled={isUploading}
-        onChange={handleInput}
-        ref={fileInputRef}
-      />
-      {/* 업로드 파일명 보여주기 */}
-      {fileName && <p>{fileName}</p>}
-      {/* 업로드 완료시 버튼 */}
-      <button
-        type="submit"
-        className="w-[135px] px-2.5 py-0.5 border rounded-2xl border-[#736F6F] cursor-pointer whitespace-nowrap text-xs text-[#736F6F]"
-        disabled={isUploading}
+      <form
+        className="flex flex-col items-center gap-3"
+        onSubmit={handleUpload}
       >
-        코디사진 업로드하기
-      </button>
-      {/* 해시태그 입력 필드*/}
-      <input
-        type="text"
-        placeholder="나의 코디를 #해시태그를 이용하여 자랑해보아요!"
-        value={hashtag}
-        onChange={(e) => setHashtag(e.target.value)}
-        className="border p-3 mt-4 mb-4 text-xs text-black text-center w-full max-w-[300px] h-[120px]"
-        disabled={isUploading}
-      />
-    </form>
+        {/* 사진 업로드시 클릭하여 진행 */}
+        <label htmlFor="imageUpload" className="cursor-pointer">
+          {/* 이미지 미리보기 */}
+          {previewImage ? (
+            <Image
+              src={previewImage}
+              alt="이미지 미리보기"
+              width={135}
+              height={135}
+              className="object-contain rounded-xl"
+            />
+          ) : (
+            <ImageUp
+              size={74}
+              aria-label="이미지 업로드하기"
+              className="mt-8"
+            />
+          )}
+        </label>
+        <input
+          type="file"
+          accept="image/*"
+          id="imageUpload"
+          className="hidden"
+          disabled={isUploading}
+          onChange={handleInput}
+          ref={fileInputRef}
+        />
+        {/* 업로드 파일명 보여주기 */}
+        {fileName && <p>{fileName}</p>}
+        {/* 업로드 완료시 버튼 */}
+        <button
+          type="submit"
+          className="w-[135px] px-2.5 py-0.5 border rounded-2xl border-[#736F6F] cursor-pointer whitespace-nowrap text-xs text-[#736F6F]"
+          disabled={isUploading}
+        >
+          코디사진 업로드하기
+        </button>
+        {/* 해시태그 입력 필드*/}
+        <input
+          type="text"
+          id="imageDescription"
+          placeholder="나의 코디를 #해시태그를 이용하여 자랑해보아요!"
+          value={hashtag}
+          onChange={(e) => setHashtag(e.target.value)}
+          className="border p-3 mt-4 mb-4 text-xs text-black text-center w-full max-w-[300px] h-[120px]"
+          disabled={isUploading}
+        />
+        <label htmlFor="imageDescription" className="sr-only">
+          코디소개글
+        </label>
+      </form>
+    </>
   );
 }
