@@ -26,17 +26,18 @@ export default function DraggableCarousel() {
     state.current.isDown = false;
     setGrabbing(false);
     if (e && containerRef.current) {
-      try { containerRef.current.releasePointerCapture(e.pointerId); } catch {}
+      try {
+        containerRef.current.releasePointerCapture(e.pointerId);
+      } catch {}
     }
   };
 
   React.useEffect(() => {
     const container = containerRef.current;
-    const track = trackRef.current;
     const idx = 1;
-    if (!container || !track || !track.children[idx]) return;
+    const card = trackRef.current?.children?.[idx] as HTMLElement | undefined;
+    if (!container || !card) return;
 
-    const card = track.children[idx] as HTMLElement;
     const containerCenter = container.clientWidth / 2;
     const cardCenter = card.offsetLeft + card.offsetWidth / 2;
     const target = Math.max(0, cardCenter - containerCenter);
@@ -47,10 +48,10 @@ export default function DraggableCarousel() {
   React.useEffect(() => {
     const onResize = () => {
       const container = containerRef.current;
-      const track = trackRef.current;
       const idx = 1;
-      if (!container || !track || !track.children[idx]) return;
-      const card = track.children[idx] as HTMLElement;
+      const card = trackRef.current?.children?.[idx] as HTMLElement | undefined;
+      if (!container || !card) return;
+
       const containerCenter = container.clientWidth / 2;
       const cardCenter = card.offsetLeft + card.offsetWidth / 2;
       const target = Math.max(0, cardCenter - containerCenter);

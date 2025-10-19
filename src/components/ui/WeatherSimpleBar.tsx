@@ -17,7 +17,7 @@ export default function WeatherSimpleBar({
     <div
       style={style}
       className={`text-black text-[12px] font-bold space-x-1 flex items-center flex-wrap ${className}`}
-    >  
+    >
       <span className="bg-white rounded-full px-3 py-1 flex items-center gap-1">
         <MapPin size={16} className="text-[#388BFE]" />
         {location}
