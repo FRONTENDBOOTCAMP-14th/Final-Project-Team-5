@@ -8,7 +8,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = '', children, ...props }, ref) => {
     const [on, setOn] = React.useState(false);
 
-    const base = 'px-1 py-1 font-bold text-xs rounded-full transition-colors';
+    const base = 'px-2 py-2  font-bold text-xs rounded-full transition-colors';
     const variant = on
       ? 'bg-[#EBF7FF] text-[#388BFE] border'
       : 'bg-white text-black border';
