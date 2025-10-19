@@ -13,3 +13,4 @@ export { default as SnsButton } from './ui/SnsButton';
 export { default as Spinner } from './ui/Spinner';
 export { default as WeatherDashboard } from './ui/WeatherDashboard';
 export { default as WeatherWeekly } from './ui/WeatherWeekly';
+export { default as LocationTemp } from './ui/LocationTemp';
