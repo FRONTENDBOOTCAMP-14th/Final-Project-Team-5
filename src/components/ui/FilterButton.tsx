@@ -2,34 +2,50 @@
 
 import React from 'react';
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  pressed?: boolean;
+  defaultPressed?: boolean;
+  onPressedChange?: (pressed: boolean) => void;
+};
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', children, ...props }, ref) => {
-    const [on, setOn] = React.useState(false);
+function FilterButton({
+  className = '',
+  children,
+  pressed,
+  defaultPressed,
+  onPressedChange,
+  type = 'button',
+  onClick,
+  ...props
+}: ButtonProps) {
+  const isControlled = pressed !== undefined;
+  const [uncontrolled, setUncontrolled] = React.useState<boolean>(defaultPressed ?? false);
 
-    const base = 'px-2 py-2  font-bold text-xs rounded-full transition-colors';
-    const variant = on
-      ? 'bg-[#EBF7FF] text-[#388BFE] border'
-      : 'bg-white text-black border';
+  const on = isControlled ? !!pressed : uncontrolled;
+  const base = 'px-2 py-2 font-bold text-xs rounded-full transition-colors border';
+  const variant = on ? 'bg-[#EBF7FF] text-[#388BFE]' : 'bg-white text-black';
 
-    return (
-      <button
-        ref={ref}
-        type={props.type ?? 'button'}
-        className={`${base} ${variant} ${className}`}
-        aria-pressed={on}
-        onClick={(e) => {
-          props.onClick?.(e);
-          if (!e.defaultPrevented) setOn((v) => !v);
-        }}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-);
+  return (
+    <button
+      type={type}
+      className={`${base} ${variant} ${className}`}
+      aria-pressed={on}
+      data-state={on ? 'on' : 'off'}
+      onClick={(e) => {
+        onClick?.(e);
+        if (e.defaultPrevented) return;
 
-Button.displayName = 'FilterButton';
-export default Button;
+        const next = !on;
+        if (!isControlled) setUncontrolled(next);
+        onPressedChange?.(next);
+      }}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+FilterButton.displayName = 'FilterButton';
+
+export default FilterButton;
