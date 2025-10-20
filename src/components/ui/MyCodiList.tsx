@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { useCodiStore } from '../../libs/supabase/codistore';
+import { useCodiStore } from '@/libs/supabase/codistore';
 import ImageForm from './ImageForm';
 import ImageList from './ImageList';
 
@@ -33,6 +33,8 @@ export default function MyCodiList() {
             {myCodi.map((codi) => (
               <ImageList key={codi.id} src={codi.imageUrl}>
                 <button
+                  type="button"
+                  aria-label="코디 삭제"
                   onClick={() => removeCodi(codi.id)}
                   className="absolute top-0 right-0 bg-white text-black p-0.5 rounded-full border-2 border-black"
                 >
@@ -43,6 +45,8 @@ export default function MyCodiList() {
           </div>
           <div className="flex justify-center">
             <button
+              type="button"
+              aria-label="코디 등록"
               onClick={() => setShowForm(true)}
               className="w-1/2 flex justify-center my-4 border-2 rounded-2xl border-black"
             >
