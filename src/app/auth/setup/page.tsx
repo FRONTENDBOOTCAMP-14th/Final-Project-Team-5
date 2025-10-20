@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
 import Input from '@/components/ui/Input';
@@ -15,6 +16,10 @@ export default function SetupPage() {
 
   const router = useRouter();
   const supabase = CreateClient();
+
+  function HandleBack() {
+    router.back();
+  }
 
   useEffect(() => {
     async function GetUser() {
@@ -30,15 +35,15 @@ export default function SetupPage() {
       setUserId(user.id);
 
       // 이미 설정 완료했는지 확인
-      const { data: _profile } = await supabase
+      const { data: profile } = await supabase
         .from('profiles')
         .select('gender, username')
         .eq('id', user.id)
         .single();
 
-      // if (_profile?.gender && _profile?.username) {
-      //   router.push('/main/cloth');
-      // }
+      if (profile?.gender && profile?.username) {
+        router.push('/main/cloth');
+      }
     }
 
     void GetUser();
@@ -47,8 +52,14 @@ export default function SetupPage() {
   async function HandleComplete(e: React.FormEvent) {
     e.preventDefault();
 
+    // 빈 값 검증
+    if (!name.trim()) {
+      toast.error('이름을 입력해주세요.');
+      return;
+    }
+
     if (!gender) {
-      alert('성별을 선택해주세요.');
+      toast.error('성별을 선택해주세요.');
       return;
     }
 
@@ -65,7 +76,7 @@ export default function SetupPage() {
         throw error;
       }
 
-      alert('가입이 완료되었습니다!');
+      toast.success('가입이 완료되었습니다!');
       router.push('/main/cloth');
     } catch (error: unknown) {
       console.error('정보 저장 에러:', error);
@@ -73,7 +84,7 @@ export default function SetupPage() {
         error instanceof Error
           ? error.message
           : '정보 저장 중 오류가 발생했습니다.';
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -93,7 +104,6 @@ export default function SetupPage() {
               placeholder="이름을 입력해주세요."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
             />
 
             <div>
@@ -127,12 +137,16 @@ export default function SetupPage() {
             </div>
           </div>
 
-          <div className="flex flex-col mt-6">
+          <div className="flex flex-col mt-auto">
             <Button type="submit" className="mb-6">
               회원가입
             </Button>
 
-            <div className="flex flex-col items-center">
+            <button
+              type="button"
+              onClick={HandleBack}
+              className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
+            >
               <Image
                 src="/hanger/logo.png"
                 alt="오늘뭐입지 로고"
@@ -141,7 +155,7 @@ export default function SetupPage() {
                 className="mb-2"
               />
               <p className="text-sm font-semibold">오늘뭐입지</p>
-            </div>
+            </button>
           </div>
         </form>
       </div>
