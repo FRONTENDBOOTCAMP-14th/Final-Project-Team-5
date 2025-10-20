@@ -1,7 +1,12 @@
 'use client';
+import React from 'react';
 import { House, UserRoundPen } from 'lucide-react';
 
-export default function BottomBar() {
+interface NavigationBarType extends React.FC {
+  $$frameFooter?: true;
+}
+
+const NavigationBar: NavigationBarType = () => {
   return (
     <div className="fixed bottom-0 left-0 w-full h-[72px] flex bg-white border-t border-gray-200">
       {/* 왼쪽 버튼 */}
@@ -17,4 +22,8 @@ export default function BottomBar() {
       </button>
     </div>
   );
-}
+};
+
+NavigationBar.$$frameFooter = true;
+
+export default NavigationBar;
