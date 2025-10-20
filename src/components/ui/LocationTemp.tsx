@@ -121,7 +121,7 @@ export default function LocationTemp() {
   return (
     <>
       {/* 현재 온도 및 간략한 날씨정보란 */}
-      <div className="flex place-content-between my-7 mx-11">
+      <div className="flex place-content-between my-7">
         <div className="text-5xl font-bold">
           {locationTemp ? `${locationTemp}°C` : '온도 불러오는 중'}
         </div>
