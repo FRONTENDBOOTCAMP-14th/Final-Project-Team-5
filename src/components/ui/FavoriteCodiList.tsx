@@ -1,7 +1,7 @@
 'use client';
 
 import { Heart } from 'lucide-react';
-import { useCodiStore } from '../../libs/supabase/codistore';
+import { useCodiStore } from '@/libs/supabase/codistore';
 import ImageList from './ImageList';
 
 export default function FavoriteCodiList() {
@@ -16,6 +16,8 @@ export default function FavoriteCodiList() {
         favoriteCodi.map((codi) => (
           <ImageList key={codi.id} src={codi.imageUrl}>
             <button
+              type="button"
+              aria-label={codi.liked ? '관심코디 취소' : '관심코디 등록'}
               onClick={() => toggleLike(codi.id)}
               className="absolute bottom-2 right-2 text-white"
             >

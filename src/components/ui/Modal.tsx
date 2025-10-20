@@ -15,11 +15,21 @@ export default function Modal() {
 
   return (
     <div>
-      <button onClick={() => setIsOpen(true)}>내 위치 선택(모달 열기)</button>
+      <button
+        type="button"
+        aria-label="내 위치 선택 모달 열기"
+        onClick={() => setIsOpen(true)}
+      >
+        내 위치 선택(모달 열기)
+      </button>
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-50 flex items-end justify-center">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-50 flex items-end justify-center"
+          >
             <motion.div
               className="absolute inset-0 bg-black"
               initial={{ opacity: 0 }}
@@ -37,6 +47,8 @@ export default function Modal() {
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-medium">내 위치 선택</span>
                 <button
+                  type="button"
+                  aria-label="위치 선택 모달 닫기"
                   onClick={() => setIsOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
                 >

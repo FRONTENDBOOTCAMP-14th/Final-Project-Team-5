@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-// import { codiList } from '../../libs/supabase/Codilist';
 import FavoriteCodiList from './FavoriteCodiList';
 import MyCodiList from './MyCodiList';
 
@@ -10,8 +9,10 @@ export default function ProfileTab() {
 
   return (
     <div className="w-full max-w-md mx-auto p-4 pb-[72px]">
-      <div className="flex">
+      <div role="group" aria-label="코디 탭 선택" className="flex">
         <button
+          type="button"
+          aria-label="관심코디 탭으로 이동"
           onClick={() => setActiveTab('favorite')}
           className={`w-1/2 pb-2 text-center font-medium transition-colors ${
             activeTab === 'favorite'
@@ -22,6 +23,8 @@ export default function ProfileTab() {
           관심 코디
         </button>
         <button
+          type="button"
+          aria-label="나의코디 탭으로 이동"
           onClick={() => setActiveTab('my')}
           className={`w-1/2 pb-2 text-center font-medium transition-colors ${
             activeTab === 'my' ? 'text-blue-500 font-semibold' : 'text-gray-500'

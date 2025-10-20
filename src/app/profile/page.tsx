@@ -1,17 +1,16 @@
-'use client';
-
-// import CodiList from '../../components/ui/CodiList';
-import ProfileSheet from '../../components/ui/ProfileSheet';
-// import { codiList } from '../../libs/supabase/Codilist';
+import NavigationBar from '@/components/ui/NavigationBar';
+import ProfileSheet from '@/components/ui/ProfileSheet';
+import ProfileTab from '@/components/ui/ProfileTab';
+import Frame from '@/components/ui/Frame';
 
 export default function ProfilePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div>
+    <Frame>
+      <div className="flex flex-col min-h-screen bg-white">
         <ProfileSheet />
-        {/*<ProfileTab codiList={codiList} />*/}
-        {/* <NavBar /> */}
+        <ProfileTab />
+        <NavigationBar />
       </div>
-    </div>
+    </Frame>
   );
 }
