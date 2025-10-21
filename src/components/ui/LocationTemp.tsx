@@ -141,7 +141,7 @@ export default function LocationTemp() {
         </div>
       </div>
       {/* 시간대별 날씨 */}
-      <div className="flex gap-5 overflow-x-auto overscroll-x-auto justify-center">
+      <div className="flex w-full gap-5 overflow-x-auto overscroll-x-auto">
         <div className="flex flex-col items-center">
           <p className="text-sm whitespace-nowrap">지금</p>
           <p>{locationTemp}°C</p>
@@ -153,7 +153,7 @@ export default function LocationTemp() {
           />
         </div>
         {forecastTime.map((hour, i) => (
-          <div key={hour} className="flex flex-col items-center justify-center">
+          <div key={hour} className="flex flex-col items-center">
             <p className="text-sm whitespace-nowrap">{hour}시</p>
             <p>{forecastTemp[i]}°C</p>
             <Image
