@@ -1,7 +1,7 @@
+import Frame from '@/components/ui/Frame';
 import NavigationBar from '@/components/ui/NavigationBar';
 import ProfileSheet from '@/components/ui/ProfileSheet';
 import ProfileTab from '@/components/ui/ProfileTab';
-import Frame from '@/components/ui/Frame';
 
 export default function ProfilePage() {
   return (
