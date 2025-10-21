@@ -94,18 +94,25 @@ export default function CodiList() {
   }, [selectedKeyword, selectedGender, selectedSeason, codiList]);
 
   const toggleLike = async (board_uuid: string, liked: boolean) => {
+    // userId는 로그인한 사용자 ID가 필요합니다. 없으면 동작 중단
+    const uid = userId;
+    if (!uid) {
+      console.error('로그인한 사용자 정보가 없습니다.');
+      return;
+    }
+
     let error: any = null;
     if (liked) {
       const { error: deleteError } = await supabase
         .from('bookmark')
         .delete()
         .eq('board_id', board_uuid)
-        .eq('user_id', userId);
+        .eq('user_id', uid);
       error = deleteError;
     } else {
       const { error: insertError } = await supabase.from('bookmark').insert({
         board_id: board_uuid,
-        user_id: userId,
+        user_id: uid,
       });
       error = insertError;
     }
