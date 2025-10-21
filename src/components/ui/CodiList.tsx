@@ -3,17 +3,21 @@
 import { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { CreateClient } from '@/libs/supabase/client';
-import ImageList from './ImageList';
+import type { Database } from '@/libs/supabase/database.types';
 import Button from './FilterButton';
+import ImageList from './ImageList';
 
-interface Codi {
-  board_uuid: string;
-  image: string;
+type BoardRow = Database['public']['Tables']['board']['Row'];
+type BookmarkRow = Database['public']['Tables']['bookmark']['Row'];
+
+interface Codi extends Partial<Omit<BoardRow, 'bookmark'>> {
   liked: boolean;
-  keyword: string;
-  gender: string;
-  season: string;
   bookmark?: { user_id: string }[];
+  // board 테이블에 gender/season 컬럼이 없을 수 있으므로 optional로 둡니다
+  gender?: string | null;
+  season?: string | null;
+  keyword?: string | null;
+  image?: string | null;
 }
 
 export default function CodiList() {
@@ -47,7 +51,7 @@ export default function CodiList() {
       setUserId(data.user?.id ?? null);
     };
 
-    fetchUser();
+    void fetchUser();
   }, [supabase]);
 
   useEffect(() => {
@@ -65,16 +69,23 @@ export default function CodiList() {
         return;
       }
 
-      const listWithLikes = data.map((item: any) => ({
+      // Supabase 응답의 타입이 명확하지 않으므로 적절히 캐스팅
+      const rows = data as unknown as
+        | (BoardRow & { bookmark?: BookmarkRow[] })[]
+        | null;
+
+      const listWithLikes: Codi[] = (rows ?? []).map((item) => ({
         ...item,
-        liked: item.bookmark?.some((b: any) => b.user_id === userId) ?? false,
+        liked:
+          item.bookmark?.some((b: BookmarkRow) => b.user_id === userId) ??
+          false,
       }));
 
       setCodiList(listWithLikes);
       setFilteredList(listWithLikes);
     };
 
-    fetchCodiList();
+    void fetchCodiList();
   }, [supabase, userId]);
 
   useEffect(() => {
@@ -93,26 +104,28 @@ export default function CodiList() {
     setFilteredList(list);
   }, [selectedKeyword, selectedGender, selectedSeason, codiList]);
 
-  const toggleLike = async (board_uuid: string, liked: boolean) => {
+  const toggleLike = async (
+    board_uuid: string,
+    liked: boolean
+  ): Promise<void> => {
     // userId는 로그인한 사용자 ID가 필요합니다. 없으면 동작 중단
-    const uid = userId;
-    if (!uid) {
+    if (!userId) {
       console.error('로그인한 사용자 정보가 없습니다.');
       return;
     }
 
-    let error: any = null;
+    let error = null;
     if (liked) {
       const { error: deleteError } = await supabase
         .from('bookmark')
         .delete()
         .eq('board_id', board_uuid)
-        .eq('user_id', uid);
+        .eq('user_id', userId);
       error = deleteError;
     } else {
       const { error: insertError } = await supabase.from('bookmark').insert({
         board_id: board_uuid,
-        user_id: uid,
+        user_id: userId,
       });
       error = insertError;
     }
@@ -132,54 +145,56 @@ export default function CodiList() {
   return (
     <div className="max-w-md mx-auto w-full p-4">
       <div className="flex overflow-x-auto gap-2 mb-4">
-        {keywords.map((k) => (
-          <Button
-            key={k}
-            type="button"
-            onClick={() => setSelectedKeyword(selectedKeyword === k ? null : k)}
-            aria-pressed={selectedKeyword === k}
-          >
-            {k}
-          </Button>
-        ))}
-        {genders.map((g) => (
-          <Button
-            key={g}
-            type="button"
-            onClick={() => setSelectedGender(selectedGender === g ? null : g)}
-            aria-pressed={selectedGender === g}
-          >
-            {g}
-          </Button>
-        ))}
-        {seasons.map((s) => (
-          <Button
-            key={s}
-            type="button"
-            onClick={() => setSelectedSeason(selectedSeason === s ? null : s)}
-            aria-pressed={selectedSeason === s}
-          >
-            {s}
-          </Button>
-        ))}
+        {[...keywords, ...genders, ...seasons].map((item) => {
+          const isKeyword = keywords.includes(item);
+          const isGender = genders.includes(item);
+          const isSeason = seasons.includes(item);
+
+          const isSelected =
+            (isKeyword && selectedKeyword === item) ||
+            (isGender && selectedGender === item) ||
+            (isSeason && selectedSeason === item);
+
+          const handleClick = () => {
+            if (isKeyword) setSelectedKeyword(isSelected ? null : item);
+            else if (isGender) setSelectedGender(isSelected ? null : item);
+            else if (isSeason) setSelectedSeason(isSelected ? null : item);
+          };
+
+          return (
+            <Button
+              key={item}
+              type="button"
+              onClick={handleClick}
+              aria-pressed={isSelected}
+            >
+              {item}
+            </Button>
+          );
+        })}
       </div>
       <div className="max-w-md mx-auto w-full justify-items-center grid grid-cols-2 gap-4 p-4">
-        {codiList.map((codi) => (
-          <ImageList key={codi.board_uuid} src={codi.image}>
-            <button
-              type="button"
-              aria-label={codi.liked ? '관심코디 취소' : '관심코디 등록'}
-              onClick={() => toggleLike(codi.board_uuid, codi.liked)}
-              className="absolute bottom-2 right-2 text-white"
-            >
-              <Heart
-                size={22}
-                fill={codi.liked ? 'red' : 'white'}
-                stroke="black"
-              />
-            </button>
-          </ImageList>
-        ))}
+        {filteredList
+          .filter(
+            (codi): codi is Codi & { board_uuid: string; image: string } =>
+              Boolean(codi.board_uuid && codi.image)
+          )
+          .map((codi) => (
+            <ImageList key={codi.board_uuid} src={codi.image}>
+              <button
+                type="button"
+                aria-label={codi.liked ? '관심코디 취소' : '관심코디 등록'}
+                onClick={() => void toggleLike(codi.board_uuid, codi.liked)}
+                className="absolute bottom-2 right-2 text-white"
+              >
+                <Heart
+                  size={22}
+                  fill={codi.liked ? 'red' : 'white'}
+                  stroke="black"
+                />
+              </button>
+            </ImageList>
+          ))}
       </div>
     </div>
   );
