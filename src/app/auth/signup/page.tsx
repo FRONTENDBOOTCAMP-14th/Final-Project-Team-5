@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
 import Input from '@/components/ui/Input';
@@ -18,18 +19,49 @@ export default function SignUpPage() {
   const router = useRouter();
   const supabase = CreateClient();
 
+  function HandleBack() {
+    router.back();
+  }
+
   async function HandleSignUp(e: React.FormEvent) {
     e.preventDefault();
 
+    // 빈 값 검증
+    if (!email.trim()) {
+      toast.error('이메일을 입력해주세요.');
+      return;
+    }
+
+    if (!password.trim()) {
+      toast.error('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    if (!passwordConfirm.trim()) {
+      toast.error('비밀번호 확인을 입력해주세요.');
+      return;
+    }
+
+    if (!name.trim()) {
+      toast.error('이름을 입력해주세요.');
+      return;
+    }
+
+    // 비밀번호 길이 검증
+    if (password.length < 6) {
+      toast.error('비밀번호는 최소 6자 이상이어야 합니다.');
+      return;
+    }
+
     // 비밀번호 확인 검증
     if (password !== passwordConfirm) {
-      alert('비밀번호가 일치하지 않습니다.');
+      toast.error('비밀번호가 일치하지 않습니다.');
       return;
     }
 
     // 성별 선택 확인
     if (!gender) {
-      alert('성별을 선택해주세요.');
+      toast.error('성별을 선택해주세요.');
       return;
     }
 
@@ -49,7 +81,7 @@ export default function SignUpPage() {
         throw authError;
       }
 
-      alert('회원가입이 완료되었습니다!');
+      toast.success('회원가입이 완료되었습니다!');
       router.push('/auth/signin');
     } catch (error: unknown) {
       console.error('회원가입 에러:', error);
@@ -57,7 +89,7 @@ export default function SignUpPage() {
         error instanceof Error
           ? error.message
           : '회원가입 중 오류가 발생했습니다.';
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -67,9 +99,12 @@ export default function SignUpPage() {
 
   return (
     <Frame>
-      <div className="flex flex-col h-full px-8 py-6">
+      <div className="flex flex-col justify-center h-full px-8 py-6">
         {/* 회원가입 폼 */}
-        <form onSubmit={HandleSubmit} className="flex-1 flex flex-col">
+        <form
+          onSubmit={HandleSubmit}
+          className="flex-1 flex flex-col justify-center"
+        >
           <div className="space-y-4 mb-auto">
             <Input
               id="email"
@@ -78,7 +113,6 @@ export default function SignUpPage() {
               placeholder="이메일을 입력해주세요."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
 
             <Input
@@ -88,7 +122,7 @@ export default function SignUpPage() {
               placeholder="비밀번호를 입력해주세요."
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              showPasswordToggle
             />
 
             <Input
@@ -98,7 +132,7 @@ export default function SignUpPage() {
               placeholder="비밀번호를 한번 더 입력해주세요."
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              required
+              showPasswordToggle
             />
 
             <Input
@@ -108,7 +142,6 @@ export default function SignUpPage() {
               placeholder="이름을 입력해주세요."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
             />
 
             <div>
@@ -147,7 +180,11 @@ export default function SignUpPage() {
               회원가입
             </Button>
 
-            <div className="flex flex-col items-center">
+            <button
+              type="button"
+              onClick={HandleBack}
+              className="flex flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
+            >
               <Image
                 src="/hanger/logo.png"
                 alt="오늘뭐입지 로고"
@@ -156,7 +193,7 @@ export default function SignUpPage() {
                 className="mb-2"
               />
               <p className="text-sm font-semibold">오늘뭐입지</p>
-            </div>
+            </button>
           </div>
         </form>
       </div>

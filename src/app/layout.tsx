@@ -1,5 +1,6 @@
 import '@/styles/main.css';
 import type { Metadata } from 'next';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: '오늘뭐입지 - 날씨 기반 옷 추천 서비스',
@@ -17,7 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko-KR">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster position="top-right" richColors closeButton />
+      </body>
     </html>
   );
 }

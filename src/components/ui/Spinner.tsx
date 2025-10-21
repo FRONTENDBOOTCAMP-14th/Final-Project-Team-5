@@ -1,3 +1,5 @@
+'use client';
+
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -9,11 +11,13 @@ export default function Spinner({ size = 'md', className }: SpinnerProps) {
   return (
     <div
       role="status"
+      aria-label="로딩 중"
       className={`flex items-center justify-center ${className ?? ''}`}
     >
       <span
         className={`${sizes[size]} border-2 border-t-blue-600 rounded-full animate-spin`}
       />
+      <span className="sr-only">로딩 중...</span>
     </div>
   );
 }

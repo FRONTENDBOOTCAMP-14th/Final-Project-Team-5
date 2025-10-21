@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
 import SnsButton from '@/components/ui/SnsButton';
@@ -28,7 +29,7 @@ export default function LandingPage() {
         error instanceof Error
           ? error.message
           : '카카오 로그인 중 오류가 발생했습니다.';
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -50,7 +51,7 @@ export default function LandingPage() {
         error instanceof Error
           ? error.message
           : '구글 로그인 중 오류가 발생했습니다.';
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   }
 
@@ -64,7 +65,7 @@ export default function LandingPage() {
 
   return (
     <Frame>
-      <div className="flex flex-col items-center h-full px-8 pt-20">
+      <div className="flex flex-col items-center justify-center h-full px-8">
         {/* 로고 */}
         <div className="mb-4">
           <Image
@@ -77,7 +78,7 @@ export default function LandingPage() {
         </div>
 
         {/* 타이틀 */}
-        <h1 className="text-3xl font-bold mb-20">오늘뭐입지</h1>
+        <h1 className="text-3xl font-bold mb-16">오늘뭐입지</h1>
 
         {/* SNS 로그인 */}
         <div className="w-full mb-8">
@@ -91,7 +92,7 @@ export default function LandingPage() {
         </div>
 
         {/* 구분선 */}
-        <div className="flex items-center w-full mb-10 mt-8">
+        <div className="flex items-center w-full mb-16 mt-8">
           <div className="flex-1 h-px bg-gray-300" />
           <span className="px-4 text-xs text-gray-500">또는</span>
           <div className="flex-1 h-px bg-gray-300" />
