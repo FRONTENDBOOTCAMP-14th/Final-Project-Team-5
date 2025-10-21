@@ -18,11 +18,15 @@ export default function Modal({ onClose, children }: ModalProps) {
   // }, [isOpen]);
 
   return (
-    <div>
+    <>
       {/* <button onClick={() => setIsOpen(true)}>내 위치 선택(모달 열기)</button> */}
 
       <AnimatePresence>
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-end justify-center"
+        >
           <motion.div
             className="absolute inset-0 bg-black"
             initial={{ opacity: 0 }}
@@ -35,21 +39,23 @@ export default function Modal({ onClose, children }: ModalProps) {
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '100%', opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium">내 위치 선택</span>
               <button
+                type="button"
+                aria-label="위치 선택 모달 닫기"
                 onClick={onClose}
                 className="text-gray-500 hover:text-gray-700 cursor-pointer"
               >
-                <X size={16} aria-label="창 닫기" />
+                <X size={16} />
               </button>
             </div>
             <div>{children}</div>
           </motion.div>
         </div>
       </AnimatePresence>
-    </div>
+    </>
   );
 }
