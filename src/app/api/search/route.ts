@@ -6,8 +6,6 @@ const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_LOCATION_API_KEY;
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get('query');
-  // const lat = searchParams.get('y');
-  // const lon = searchParams.get('x');
 
   if (!query) {
     return NextResponse.json({ error: 'error.message' }, { status: 400 });
