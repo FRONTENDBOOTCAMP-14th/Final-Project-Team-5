@@ -52,7 +52,7 @@ export default function WeatherDashboard() {
       const searchTerm = (await LoadSearch(query)) as Document;
       setResults(searchTerm);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error('주소 검색창을 불러오지 못했습니다!');
     }
   }
