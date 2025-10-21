@@ -34,3 +34,17 @@ export interface TempData {
     }[];
   }[];
 }
+
+export interface Document {
+  documents: {
+    address_name: string;
+    road_address: {
+      building_name: string;
+      zone_no: string;
+      x?: string;
+      y?: string;
+    };
+    x?: string;
+    y?: string;
+  }[];
+}

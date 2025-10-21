@@ -21,7 +21,9 @@ export default function Home() {
 
   return (
     <Frame>
-      <Modal />
+      <Modal onClose={() => onclose}>
+        <div>임시</div>
+      </Modal>
       {/* 알림창 오픈확인을 위한 임시버튼 */}
       <button
         className="border rounded-xl p-1 cursor-pointer"

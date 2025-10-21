@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -7,6 +8,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   label: string;
   showPasswordToggle?: boolean;
+  props?: ReactNode;
 }
 
 export default function Input({
