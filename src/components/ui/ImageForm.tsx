@@ -4,28 +4,32 @@ import { useRef, useState } from 'react';
 import { ArrowLeft, ImageUp } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
-import { useCodiStore } from '@/libs/supabase/codistore';
+import { CreateClient } from '@/libs/supabase/client';
+import Button from './FilterButton';
 
 interface Props {
+  userId?: string;
   onBack?: () => void;
+  onSubmitSuccess?: () => void;
 }
 
-export default function ImageForm({ onBack }: Props) {
-  const { addCodi } = useCodiStore();
+export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
+  const supabase = CreateClient();
   const [isUploading, setIsUploading] = useState(false);
 
   // 파일명 및 파일이미지 미리보기
   const [fileName, setFileName] = useState('');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [hashtag, setHashtag] = useState('');
+  const [keyword, setKeyword] = useState<string | null>(null);
+  const [gender, setGender] = useState<string | null>(null);
+  const [season, setSeason] = useState<string | null>(null);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (file) {
       setFileName(file.name);
-
-      const imageUrl = URL.createObjectURL(file);
-      setPreviewImage(imageUrl);
+      setPreviewImage(URL.createObjectURL(file));
     } else {
       setFileName('');
       setPreviewImage(null);
@@ -35,12 +39,11 @@ export default function ImageForm({ onBack }: Props) {
   // 파일 선택없이 업로드 버튼 클릭시 상태알림
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = (e: React.FormEvent) => {
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const input = fileInputRef.current;
 
-    if (!input?.files || input.files.length === 0) {
+    if (!input?.files?.length) {
       toast.error('파일을 선택해주세요!');
       return;
     }
@@ -52,10 +55,52 @@ export default function ImageForm({ onBack }: Props) {
       return;
     }
 
+    if (!keyword || !gender || !season) {
+      toast.error('키워드, 성별, 시즌을 모두 선택해주세요.');
+      return;
+    }
+
+    if (!userId) {
+      toast.error('업로드하려면 로그인해야 합니다.');
+      return;
+    }
+
+    const file = input.files[0];
+    setIsUploading(true);
+
     try {
-      setIsUploading(true);
+      const filePath = `${userId}/${Date.now()}_${file.name}`;
       //supabase 업로드 로직
-      addCodi({ imageUrl: previewImage, hashtag: trimmedHashtag });
+      const { error: uploadError } = await supabase.storage
+        .from('codi-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error(uploadError);
+        toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('codi-images')
+        .getPublicUrl(filePath);
+      const publicUrl = urlData.publicUrl;
+
+      const { error: insertError } = await supabase.from('board').insert({
+        image: publicUrl,
+        text: trimmedHashtag,
+        user_id: userId,
+        created_at: new Date().toISOString(),
+        keyword,
+        gender,
+        season,
+      });
+
+      if (insertError) {
+        console.error(insertError);
+        toast.error('데이터 저장 실패!');
+        return;
+      }
 
       // 실제 업로드 성공시 알림
       toast.success('사진 업로드가 완료되었습니다!');
@@ -64,8 +109,12 @@ export default function ImageForm({ onBack }: Props) {
       setFileName('');
       setPreviewImage(null);
       setHashtag('');
+      setKeyword(null);
+      setGender(null);
+      setSeason(null);
 
-      if (onBack) onBack();
+      onSubmitSuccess?.();
+      onBack?.();
     } catch (error) {
       console.error(error);
       toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
@@ -73,6 +122,17 @@ export default function ImageForm({ onBack }: Props) {
       setIsUploading(false);
     }
   };
+
+  const keywords = [
+    '캐주얼',
+    '스트릿',
+    '미니멀',
+    '스포티',
+    '클래식',
+    '워크웨어',
+  ];
+  const genders = ['남', '여'];
+  const seasons = ['봄', '여름', '가을', '겨울'];
 
   return (
     <>
@@ -87,7 +147,7 @@ export default function ImageForm({ onBack }: Props) {
       )}
       <form
         className="flex flex-col items-center gap-3"
-        onSubmit={handleUpload}
+        onSubmit={(e) => void handleUpload(e)}
       >
         {/* 사진 업로드시 클릭하여 진행 */}
         <label htmlFor="imageUpload" className="cursor-pointer">
@@ -96,9 +156,10 @@ export default function ImageForm({ onBack }: Props) {
             <Image
               src={previewImage}
               alt="이미지 미리보기"
-              width={135}
-              height={135}
-              className="object-contain rounded-xl"
+              width={500}
+              height={500}
+              className="object-contain rounded-xl w-[40%] h-auto"
+              loading="lazy"
             />
           ) : (
             <ImageUp
@@ -127,6 +188,43 @@ export default function ImageForm({ onBack }: Props) {
         >
           코디사진 업로드하기
         </button>
+        {/* 필터버튼 입력 필드*/}
+        <div className="flex flex-wrap gap-2 mb-2">
+          {keywords.map((k) => (
+            <Button
+              key={k}
+              type="button"
+              onClick={() => setKeyword(k)}
+              aria-pressed={keyword === k}
+            >
+              {k}
+            </Button>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {genders.map((g) => (
+            <Button
+              key={g}
+              type="button"
+              onClick={() => setGender(g)}
+              aria-pressed={gender === g}
+            >
+              {g}
+            </Button>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {seasons.map((s) => (
+            <Button
+              key={s}
+              type="button"
+              onClick={() => setSeason(s)}
+              aria-pressed={season === s}
+            >
+              {s}
+            </Button>
+          ))}
+        </div>
         {/* 해시태그 입력 필드*/}
         <input
           type="text"
