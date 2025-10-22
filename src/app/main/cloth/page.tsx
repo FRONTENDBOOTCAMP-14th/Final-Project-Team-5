@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Frame from '@/components/ui/Frame';
-import ImageList from '@/components/ui/ImageList'; // ⬆ import 순서 올림
-import ImageModal from '@/components/ui/ImageModal'; // ⬆ import 순서 올림
+import ImageList from '@/components/ui/ImageList';
+//import ImageModal from '@/components/ui/ImageModal';
 import KeywordList from '@/components/ui/KeywordList';
 import MainCarousel from '@/components/ui/MainCarousel';
 import NavigationBar from '@/components/ui/NavigationBar';
@@ -59,7 +59,7 @@ export default function LandingPage() {
       </div>
 
       <NavigationBar />
-      <ImageModal open={modalOpen} onClose={() => setModalOpen(false)} src={selectedImage ?? undefined} />
+      {/*<ImageModal open={modalOpen} onClose={() => setModalOpen(false)} src={selectedImage ?? undefined} />*/}
     </Frame>
   );
 }
