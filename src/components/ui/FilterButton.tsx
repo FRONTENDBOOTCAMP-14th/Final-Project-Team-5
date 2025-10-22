@@ -19,10 +19,13 @@ function FilterButton({
   ...props
 }: ButtonProps) {
   const isControlled = pressed !== undefined;
-  const [uncontrolled, setUncontrolled] = React.useState<boolean>(defaultPressed ?? false);
+  const [uncontrolled, setUncontrolled] = React.useState<boolean>(
+    defaultPressed ?? false
+  );
 
   const on = isControlled ? !!pressed : uncontrolled;
-  const base = 'px-2 py-2 font-bold text-xs rounded-full transition-colors border';
+  const base =
+    'px-2 py-2 font-bold text-xs rounded-full transition-colors border';
   const variant = on ? 'bg-[#EBF7FF] text-[#388BFE]' : 'bg-white text-black';
 
   return (
