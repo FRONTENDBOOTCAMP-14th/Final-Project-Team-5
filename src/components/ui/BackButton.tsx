@@ -1,44 +1,41 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
 }
 
-const BackButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', children, onClick, ...props }, ref) => {
-    const router = useRouter();
+export default function BackButton({
+  className = '',
+  children,
+  onClick,
+  ...props
+}: ButtonProps) {
+  const router = useRouter();
 
-    const containerStyles =
-      'w-full px-4 py-3 text-black font-bold rounded-lg flex items-center gap-2';
-    const iconButtonStyles = 'p-2 rounded-lg hover:bg-gray-100 transition';
+  const containerStyles =
+    'w-full px-4 py-3 text-black font-bold rounded-lg flex items-center gap-2';
+  const iconButtonStyles = 'p-2 rounded-lg hover:bg-gray-100 transition';
 
-    return (
-      <div className={`${containerStyles} ${className}`}>
-        <button
-          ref={ref}
-          className={iconButtonStyles}
-          onClick={(e) => {
-            if (onClick) {
-              onClick(e);
-              return;
-            }
-
-            router.back();
-          }}
-          {...props}
-        >
-          <ArrowLeft size={44} className="text-[#000]" />
-        </button>
-        {children && <span className="select-none">{children}</span>}
-      </div>
-    );
-  }
-);
-
-BackButton.displayName = 'BackButton';
-
-export default BackButton;
+  return (
+    <div className={`${containerStyles} ${className}`}>
+      <button
+        className={iconButtonStyles}
+        onClick={(e) => {
+          if (onClick) {
+            onClick(e);
+            return;
+          }
+          router.back();
+        }}
+        {...props}
+      >
+        <ArrowLeft size={44} className="text-[#000]" />
+      </button>
+      {children && <span className="select-none">{children}</span>}
+    </div>
+  );
+}
