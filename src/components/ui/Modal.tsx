@@ -1,65 +1,61 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+// import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
-export default function Modal() {
-  const [isOpen, setIsOpen] = useState(false);
+interface ModalProps {
+  onClose: () => void;
+  children: ReactNode;
+}
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-    }
-  }, [isOpen]);
+export default function Modal({ onClose, children }: ModalProps) {
+  // const [isOpen, setIsOpen] = useState(false);
+
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+  //   }
+  // }, [isOpen]);
 
   return (
-    <div>
-      <button
-        type="button"
-        aria-label="내 위치 선택 모달 열기"
-        onClick={() => setIsOpen(true)}
-      >
-        내 위치 선택(모달 열기)
-      </button>
+    <>
+      {/* <button onClick={() => setIsOpen(true)}>내 위치 선택(모달 열기)</button> */}
 
       <AnimatePresence>
-        {isOpen && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            className="fixed inset-0 z-50 flex items-end justify-center"
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-end justify-center"
+        >
+          <motion.div
+            className="absolute inset-0 bg-black"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.5 }}
+            exit={{ opacity: 0 }}
+            // onClick={() => setIsOpen(false)}
+          />
+          <motion.div
+            className="relative w-full max-w-md h-[80%] bg-white rounded-t-2xl p-4 flex flex-col"
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
           >
-            <motion.div
-              className="absolute inset-0 bg-black"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-            />
-            <motion.div
-              className="relative w-full max-w-md h-[80%] bg-white rounded-t-2xl p-4 flex flex-col"
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium">내 위치 선택</span>
-                <button
-                  type="button"
-                  aria-label="위치 선택 모달 닫기"
-                  onClick={() => setIsOpen(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X size={8} />
-                </button>
-              </div>
-              <div>{/* 인풋 및 버튼 추가  */}</div>
-            </motion.div>
-          </div>
-        )}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium">내 위치 선택</span>
+              <button
+                type="button"
+                aria-label="위치 선택 모달 닫기"
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700 cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div>{children}</div>
+          </motion.div>
+        </div>
       </AnimatePresence>
-    </div>
+    </>
   );
 }
