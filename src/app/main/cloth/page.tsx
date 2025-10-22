@@ -2,13 +2,13 @@
 
 import React from 'react';
 import Frame from '@/components/ui/Frame';
+import ImageList from '@/components/ui/ImageList'; // ⬆ import 순서 올림
+import ImageModal from '@/components/ui/ImageModal'; // ⬆ import 순서 올림
 import KeywordList from '@/components/ui/KeywordList';
 import MainCarousel from '@/components/ui/MainCarousel';
 import NavigationBar from '@/components/ui/NavigationBar';
 import WeatherDashboard from '@/components/ui/WeatherDashboard';
 import WeatherSimpleBar from '@/components/ui/WeatherSimpleBar';
-import ImageList from '@/components/ui/ImageList';
-import ImageModal from '@/components/ui/ImageModal';
 
 export default function LandingPage() {
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -52,22 +52,14 @@ export default function LandingPage() {
       <KeywordList keywords={keywords} />
       <div className="grid grid-cols-2 gap-2 mt-4">
         {[1, 2, 3, 4, 5].map((n) => (
-          <div
-            key={n}
-            onClick={() => handleImageClick(`/images/sample${n}.jpg`)}
-            className="cursor-pointer"
-          >
+          <div key={n} onClick={() => handleImageClick(`/images/sample${n}.jpg`)} className="cursor-pointer">
             <ImageList src={`/images/sample${n}.jpg`} />
           </div>
         ))}
       </div>
 
       <NavigationBar />
-      <ImageModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        src={selectedImage ?? undefined}
-      />
+      <ImageModal open={modalOpen} onClose={() => setModalOpen(false)} src={selectedImage ?? undefined} />
     </Frame>
   );
 }
