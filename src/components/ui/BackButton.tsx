@@ -9,7 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const BackButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', children, ...props }, ref) => {
+  ({ className = '', children, onClick, ...props }, ref) => {
     const router = useRouter();
 
     const containerStyles =
@@ -22,8 +22,11 @@ const BackButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ref={ref}
           className={iconButtonStyles}
           onClick={(e) => {
-            props.onClick?.(e);
-            if (e.defaultPrevented) return;
+            if (onClick) {
+              onClick(e);
+              return;
+            }
+
             router.back();
           }}
           {...props}
