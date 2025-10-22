@@ -13,9 +13,7 @@ export default function Frame({ children, className = '', paddingX, color }: Fra
   const hasColor = typeof color === 'string' && color.length > 0;
 
   const hasFooter = React.Children.toArray(children).some(
-    (child) =>
-      React.isValidElement(child) &&
-      (child.type as { $$frameFooter?: boolean }).$$frameFooter === true
+    (child) => React.isValidElement(child) && (child.type as { $$frameFooter?: boolean }).$$frameFooter === true
   );
 
   return (

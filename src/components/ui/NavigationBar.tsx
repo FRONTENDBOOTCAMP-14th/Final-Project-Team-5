@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { House, UserRoundPen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface NavigationBarType extends React.FC {
   $$frameFooter?: true;
