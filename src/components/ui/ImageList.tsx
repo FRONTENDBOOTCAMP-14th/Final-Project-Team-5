@@ -7,7 +7,7 @@ interface ImageProps {
 
 export default function ImageList({ src, children }: ImageProps) {
   return (
-    <div className="relative flex justify-center w-[135px] h-[135px]">
+    <div className="relative flex justify-center w-[100%] aspect-square">
       <Image
         src={src}
         alt="코디사진"
