@@ -8,12 +8,19 @@ type FrameProps = React.PropsWithChildren<{
   color?: string; // 그라데이션 시작 색
 }>;
 
-export default function Frame({ children, className = '', paddingX, color }: FrameProps) {
+export default function Frame({
+  children,
+  className = '',
+  paddingX,
+  color,
+}: FrameProps) {
   const hasPadding = typeof paddingX === 'number' && paddingX > 0;
   const hasColor = typeof color === 'string' && color.length > 0;
 
   const hasFooter = React.Children.toArray(children).some(
-    (child) => React.isValidElement(child) && (child.type as { $$frameFooter?: boolean }).$$frameFooter === true
+    (child) =>
+      React.isValidElement(child) &&
+      (child.type as { $$frameFooter?: boolean }).$$frameFooter === true
   );
 
   return (
@@ -25,7 +32,9 @@ export default function Frame({ children, className = '', paddingX, color }: Fra
         className,
       ].join(' ')}
       style={{
-        background: hasColor ? `linear-gradient(to bottom, ${color} 0%, #ffffff 100%)` : undefined,
+        background: hasColor
+          ? `linear-gradient(to bottom, ${color} 0%, #ffffff 100%)`
+          : undefined,
       }}
     >
       <div
