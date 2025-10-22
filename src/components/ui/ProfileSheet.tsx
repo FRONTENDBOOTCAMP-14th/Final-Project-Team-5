@@ -1,0 +1,72 @@
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import type { PanInfo } from 'framer-motion';
+
+export default function ProfileSheet() {
+  const [isOpen, setIsOpen] = useState(true);
+  const dragThreshold = 80;
+
+  function handleDragEnd(
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) {
+    if (info.offset.y < -dragThreshold) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+    }
+  }
+
+  return (
+    <motion.div
+      className="w-full bg-white"
+      drag="y"
+      dragConstraints={{ top: 0, bottom: 0 }}
+      dragElastic={0.2}
+      onDragEnd={handleDragEnd}
+    >
+      <motion.div
+        className="w-full bg-white"
+        animate={{ height: isOpen ? '40vh' : '60px' }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      >
+        {isOpen ? (
+          <div className="h-full flex flex-col items-center justify-center p-4">
+            <div className="w-full flex justify-end mb-4">
+              {/* 계정설정버튼 */}
+            </div>
+            <motion.div
+              layout
+              className="w-20 h-20 rounded-full bg-white overflow-hidden"
+            >
+              {/* 프로필이미지 */}
+            </motion.div>
+            <motion.span layout className="mt-3 text-lg font-semibold">
+              {/* 아이디 */}
+            </motion.span>
+            <motion.p
+              layout
+              className="mt-3 text-sm font-semibold text-gray-500"
+            >
+              {/* 한줄소개 */}
+            </motion.p>
+          </div>
+        ) : (
+          <motion.div layout className="h-full flex items-center px-4 gap-3">
+            <motion.div
+              layout
+              className="w-10 h-10 rounded-full bg-white overflow-hidden"
+            >
+              {/* 프로필이미지 */}
+            </motion.div>
+            <motion.span layout className="mt-3 text-sm font-semibold">
+              {/* 아이디 */}
+            </motion.span>
+          </motion.div>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}

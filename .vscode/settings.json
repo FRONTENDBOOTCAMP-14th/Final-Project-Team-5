@@ -8,7 +8,7 @@
 
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit", // 저장 시 ESLint 자동 수정
-    "source.organizeImports": "explicit" // 저장 시 import 정리
+    "source.organizeImports": "never" // 저장 시 import 정리
   },
 
   // --------------------------------------------------------------------------
