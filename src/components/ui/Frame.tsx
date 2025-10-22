@@ -8,12 +8,7 @@ type FrameProps = React.PropsWithChildren<{
   color?: string; // 그라데이션 시작 색
 }>;
 
-export default function Frame({
-  children,
-  className = '',
-  paddingX,
-  color,
-}: FrameProps) {
+export default function Frame({ children, className = '', paddingX, color }: FrameProps) {
   const hasPadding = typeof paddingX === 'number' && paddingX > 0;
   const hasColor = typeof color === 'string' && color.length > 0;
 
@@ -32,15 +27,11 @@ export default function Frame({
         className,
       ].join(' ')}
       style={{
-        background: hasColor
-          ? `linear-gradient(to bottom, ${color} 0%, #ffffff 100%)`
-          : undefined,
+        background: hasColor ? `linear-gradient(to bottom, ${color} 0%, #ffffff 100%)` : undefined,
       }}
     >
       <div
-        className={`h-full overflow-y-auto overscroll-contain ${
-          hasFooter ? 'pb-[82px]' : 'pb-0'
-        }`}
+        className={`h-full overflow-y-auto overscroll-contain ${hasFooter ? 'pb-[82px]' : 'pb-0'}`}
         style={{
           paddingLeft: hasPadding ? `${paddingX}px` : undefined,
           paddingRight: hasPadding ? `${paddingX}px` : undefined,
