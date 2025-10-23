@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Button from '@/components/ui/Button';
@@ -99,6 +100,15 @@ export default function SignInPage() {
               onChange={(e) => setPassword(e.target.value)}
               showPasswordToggle
             />
+            {/* 비밀번호 찾기 */}
+            <div className="text-right">
+              <Link
+                href="/auth/reset"
+                className="text-sm text-gray-600 hover:text-gray-900"
+              >
+                비밀번호를 잊으셨나요?
+              </Link>
+            </div>
           </div>
 
           <div className="flex flex-col mt-8">
