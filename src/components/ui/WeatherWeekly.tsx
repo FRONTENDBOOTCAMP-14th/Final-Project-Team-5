@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import type { WeatherData } from '@/@types/global.d.ts';
 import useGeoLocation from '@/hooks/useGeoLocation';
 import { GetWeatherForecast } from '@/libs/getWeather';
+import { useWeatherStore } from '@/libs/store/weatherStore';
 import GetWeatherIcon from '@/utils/getWeatherCondition';
 
 export default function WeatherWeekly() {
@@ -17,15 +18,22 @@ export default function WeatherWeekly() {
 
   // 현재 위치 가져오기
   const { lat, lon } = useGeoLocation();
+
+  // 변경 위치 가져오기
+  const { currentLat, currentLon } = useWeatherStore();
+
+  const updateLat = currentLat ?? lat;
+  const updateLon = currentLon ?? lon;
+
   // 현재 위치의 5일간의 최저, 최고기온 구하기
   useEffect(() => {
-    if (!lat || !lon) return;
+    if (!updateLat || !updateLon) return;
 
     const abortController = new AbortController();
 
     async function fetchWeekWeather() {
       try {
-        const temp = await GetWeatherForecast(lat, lon);
+        const temp = await GetWeatherForecast(updateLat, updateLon);
 
         const dailyGroup: Record<string, WeatherData[]> = {};
 
@@ -77,7 +85,7 @@ export default function WeatherWeekly() {
     return () => {
       abortController.abort();
     };
-  }, [lat, lon]);
+  }, [updateLat, updateLon]);
 
   // 날짜 및 요일 구하기
   useEffect(() => {

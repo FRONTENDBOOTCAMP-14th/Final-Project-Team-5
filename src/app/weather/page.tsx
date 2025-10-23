@@ -1,4 +1,3 @@
-import { ArrowLeft } from 'lucide-react';
 import {
   Frame,
   WeatherDashboard,

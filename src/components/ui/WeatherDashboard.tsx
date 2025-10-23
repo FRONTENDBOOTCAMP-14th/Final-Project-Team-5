@@ -9,6 +9,7 @@ import type { Document } from '@/@types/global';
 import useGeoLocation from '@/hooks/useGeoLocation';
 import useLocationData from '@/hooks/useLocationData';
 import LoadSearch from '@/libs/loadSearch';
+import { useWeatherStore } from '@/libs/store/weatherStore';
 import Button from './Button';
 import Input from './Input';
 import LocationTemp from './LocationTemp';
@@ -56,6 +57,8 @@ export default function WeatherDashboard() {
       toast.error('주소 검색창을 불러오지 못했습니다!');
     }
   }
+
+  const setLocation = useWeatherStore((state) => state.setLocation);
 
   return (
     <div className="h-[228px] p-3 rounded-2xl ml-11 mr-11 mx-auto bg-[#FFFFFF]">
@@ -164,6 +167,7 @@ export default function WeatherDashboard() {
                   const addressLon = Number(selected?.x);
 
                   void GetLocationData(addressLat, addressLon);
+                  setLocation(addressLat, addressLon);
                   handleClose();
                 } else {
                   toast('주소를 선택해주세요!');
