@@ -22,7 +22,7 @@
 
 ### 🔗 배포사이트
 [<img width="234" height="163" alt="image" src="https://github.com/user-attachments/assets/0a73d419-c646-4428-b1e7-be3a003ff1d7" />
-](https://final-project-team-5-n2d1f3whv-icejacks-projects.vercel.app/)
+](https://final-project-team-5-ten.vercel.app/)
 
 ### 🔰 프로젝트 팀원 소개
 | 김민지 | 안동원 | 윤정화 | 👑조석근 | 
