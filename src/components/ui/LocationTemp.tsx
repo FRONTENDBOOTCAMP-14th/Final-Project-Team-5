@@ -93,7 +93,7 @@ export default function LocationTemp() {
     const iconArray = [];
 
     if (temp?.list?.length) {
-      const limit = Math.min(6, temp.list.length);
+      const limit = Math.min(8, temp.list.length);
 
       for (let i = 0; i < limit; i++) {
         const unixTime = temp?.list[i]?.dt;
@@ -148,16 +148,24 @@ export default function LocationTemp() {
         </div>
       </div>
       {/* 시간대별 날씨 */}
-      <div className="flex w-full gap-5 overflow-x-auto overscroll-x-auto">
-        <div className="flex flex-col items-center">
-          <p className="text-sm whitespace-nowrap">지금</p>
-          <p>{locationTemp}°C</p>
-          <Image
-            src={iconPath}
-            alt={String(description)}
-            width={22}
-            height={22}
-          />
+      <div
+        className="flex overflow-x-auto gap-5 min-w-full scrollbar-hide"
+        style={{
+          scrollbarWidth: 'none', // Firefox
+          msOverflowStyle: 'none', // IE/Edge
+        }}
+      >
+        <div className="flex flex-row overscroll-contain">
+          <div className="flex flex-col items-center">
+            <p className="text-sm whitespace-nowrap">지금</p>
+            <p>{locationTemp}°C</p>
+            <Image
+              src={iconPath}
+              alt={String(description)}
+              width={22}
+              height={22}
+            />
+          </div>
         </div>
         {forecastTime.map((hour, i) => (
           <div key={hour} className="flex flex-col items-center">
