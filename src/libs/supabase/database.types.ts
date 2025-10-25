@@ -56,24 +56,30 @@ export type Database = {
           created_at: string;
           image: string | null;
           keyword: string | null;
+          gender: string | null;
           text: string;
           user_id: string;
+          season: string | null;
         };
         Insert: {
           board_uuid?: string;
           created_at?: string;
           image?: string | null;
           keyword?: string | null;
+          gender: string | null;
           text: string;
           user_id: string;
+          season: string | null;
         };
         Update: {
           board_uuid?: string;
           created_at?: string;
           image?: string | null;
           keyword?: string | null;
+          gender: string | null;
           text?: string;
           user_id?: string;
+          season: string | null;
         };
         Relationships: [
           {
