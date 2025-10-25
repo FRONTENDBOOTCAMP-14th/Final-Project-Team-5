@@ -1,3 +1,5 @@
+'use client';
+
 // 변경 위치의 주소 가져오기
 
 import { useState, useEffect } from 'react';

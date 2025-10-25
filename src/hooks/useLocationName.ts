@@ -1,3 +1,5 @@
+'use client';
+
 // 현재위치 컴포넌트별 공유하기
 
 import { useState, useEffect } from 'react';

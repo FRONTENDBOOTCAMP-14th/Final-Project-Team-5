@@ -21,3 +21,5 @@ export { default as BackButton } from './ui/BackButton';
 export { default as WeatherWeekly } from './ui/WeatherWeekly';
 export { default as LocationTemp } from './ui/LocationTemp';
 export { default as ImageModal } from './ui/ImageModal';
+export { default as WeatherSimpleBar } from './ui/WeatherSimpleBar';
+export { default as FilterBar } from './ui/KeywordList';
