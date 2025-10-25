@@ -47,11 +47,7 @@ export default function LandingPage() {
   return (
     <Frame paddingX={24} color="#D2E4FB">
       <WeatherDashboard />
-      <WeatherSimpleBar
-        location="강남구 역삼동"
-        time="오후 2시"
-        style={{ marginTop: 20 }}
-      />
+      <WeatherSimpleBar style={{ marginTop: 20 }} />
       <span className="inline-block text-[18px] mt-[25px] font-bold">
         이렇게 입어보는거 어떤가요?
       </span>

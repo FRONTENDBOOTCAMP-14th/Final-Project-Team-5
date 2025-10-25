@@ -2,7 +2,6 @@ import { Clock4, MapPin } from 'lucide-react';
 import useLocationName from '@/hooks/useLocationName';
 
 interface WeatherSimpleBarProps {
-  time: string;
   style?: React.CSSProperties;
   className?: string;
 }
