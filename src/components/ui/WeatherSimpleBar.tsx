@@ -1,18 +1,23 @@
 import { Clock4, MapPin } from 'lucide-react';
+import useLocationName from '@/hooks/useLocationName';
 
 interface WeatherSimpleBarProps {
-  location: string;
   time: string;
   style?: React.CSSProperties;
   className?: string;
 }
 
 export default function WeatherSimpleBar({
-  location,
-  time,
   style,
   className = '',
 }: WeatherSimpleBarProps) {
+  // 현재 위치 구하기
+  const { locationName } = useLocationName();
+
+  // 현재 시간 구하기
+  const now = new Date();
+  const hour = now.getHours();
+
   return (
     <div
       style={style}
@@ -20,14 +25,14 @@ export default function WeatherSimpleBar({
     >
       <span className="bg-white rounded-full px-3 py-1 flex items-center gap-1">
         <MapPin size={16} className="text-[#388BFE]" />
-        {location}
+        {locationName}
       </span>
       <span>에서</span>
       <span className="bg-white rounded-full px-3 py-1 flex items-center gap-1">
         <Clock4 size={16} className="text-[#388BFE]" />
-        {time}
+        {hour}시
       </span>
-      <span>에 외출시</span>
+      <span>부터 외출시</span>
     </div>
   );
 }
