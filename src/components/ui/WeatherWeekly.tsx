@@ -112,20 +112,20 @@ export default function WeatherWeekly() {
   }, []);
 
   return (
-    <section className="flex flex-col mx-11">
+    <section className="flex flex-col mx-auto">
       <h2 className="sr-only">일주일 일기예보</h2>
-      <p className="text-[18px] font-medium text-left text-nowrap mt-7 mb-5">
+      <p className="text-[18px] font-medium text-left text-nowrap mt-7 mb-5 mx-6">
         앞으로 7일 동안은 이런 날씨에요!
       </p>
 
       {date.map((d: string, i: number) => (
         <div
           key={d}
-          className={`w-full h-[55px] ${i === 0 ? 'bg-[#D2E4Fb]' : ''} flex items-center justify-center mx-auto`}
+          className={`h-[55px] ${i === 0 ? 'bg-[#D2E4Fb]' : ''} flex items-center justify-center`}
         >
           <p className="flex gap-4 mr-6">
             <span>{d}</span>
-            <span className="w-[28px] text-center">
+            <span className="w-[28px] text-center text-nowrap">
               {i === 0 ? '오늘' : dayName[i]}
             </span>
           </p>

@@ -7,7 +7,7 @@ import {
 
 export default function WeatherDetails() {
   return (
-    <Frame>
+    <Frame paddingX={24}>
       <BackButton />
       <WeatherDashboard />
       <WeatherWeekly />
