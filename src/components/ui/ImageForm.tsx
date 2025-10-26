@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ArrowLeft, ImageUp } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
@@ -29,7 +29,8 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
     const file = e.target.files?.[0];
     if (file) {
       setFileName(file.name);
-      setPreviewImage(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      setPreviewImage(url);
     } else {
       setFileName('');
       setPreviewImage(null);
@@ -38,6 +39,16 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
 
   // 파일 선택없이 업로드 버튼 클릭시 상태알림
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewImage) {
+        try {
+          URL.revokeObjectURL(previewImage);
+        } catch {}
+      }
+    };
+  }, [previewImage]);
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +59,6 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
       return;
     }
 
-    // 해시태그 유효성 검사
     const trimmedHashtag = hashtag.trim();
     if (trimmedHashtag && !trimmedHashtag.startsWith('#')) {
       toast.error('해시태그는 #으로 시작해야 합니다.');
@@ -69,23 +79,41 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
     setIsUploading(true);
 
     try {
+      // Supabase 스토리지 버킷 지정
+      const imageStorage = supabase.storage.from('imageStorage');
+
+      // 파일 경로 지정
       const filePath = `${userId}/${Date.now()}_${file.name}`;
-      //supabase 업로드 로직
-      const { error: uploadError } = await supabase.storage
-        .from('codi-images')
-        .upload(filePath, file);
+      console.log('uploading to path:', filePath, 'bucket: imageStorage');
+
+      // 파일 업로드
+      const { data: uploadData, error: uploadError } =
+        await imageStorage.upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
 
       if (uploadError) {
-        console.error(uploadError);
-        toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
+        console.error('uploadError', uploadError);
+        toast.error(
+          `사진 업로드 실패: ${uploadError.message || '알 수 없는 오류'}`
+        );
         return;
       }
 
-      const { data: urlData } = supabase.storage
-        .from('codi-images')
-        .getPublicUrl(filePath);
-      const publicUrl = urlData.publicUrl;
+      console.log('uploadData', uploadData);
 
+      // 퍼블릭 URL 생성
+      const { data: urlData } = imageStorage.getPublicUrl(filePath);
+      const publicUrl = urlData?.publicUrl;
+
+      if (!publicUrl) {
+        console.error('publicUrl is empty', urlData);
+        toast.error('업로드는 되었지만 퍼블릭 URL을 가져오지 못했습니다.');
+        return;
+      }
+
+      // ✅ Supabase DB에 삽입
       const { error: insertError } = await supabase.from('board').insert({
         image: publicUrl,
         text: trimmedHashtag,
@@ -97,15 +125,14 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
       });
 
       if (insertError) {
-        console.error(insertError);
+        console.error('insertError', insertError);
         toast.error('데이터 저장 실패!');
         return;
       }
 
-      // 실제 업로드 성공시 알림
       toast.success('사진 업로드가 완료되었습니다!');
 
-      //업로드 후 초기화
+      // 초기화
       setFileName('');
       setPreviewImage(null);
       setHashtag('');
@@ -113,10 +140,16 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
       setGender(null);
       setSeason(null);
 
+      if (previewImage) {
+        try {
+          URL.revokeObjectURL(previewImage);
+        } catch {}
+      }
+
       onSubmitSuccess?.();
       onBack?.();
     } catch (error) {
-      console.error(error);
+      console.error('unexpected error', error);
       toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
     } finally {
       setIsUploading(false);
