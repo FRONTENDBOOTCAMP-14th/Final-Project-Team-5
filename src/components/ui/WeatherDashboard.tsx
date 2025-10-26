@@ -13,6 +13,7 @@ import Button from './Button';
 import Input from './Input';
 import LocationTemp from './LocationTemp';
 import Modal from './Modal';
+import Spinner from './Spinner';
 
 export default function WeatherDashboard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +48,15 @@ export default function WeatherDashboard() {
   // 성능향상을 위한 input 검색어 useDeferredValue 훅 적용
   const deferredQuery = useDeferredValue(query);
 
+  // 로딩스피너
+  if (!locationName) {
+    return (
+      <div className="h-[228px] p-3 rounded-2xl mx-auto bg-[#FFFFFF] flex items-center justify-center">
+        <Spinner size="sm" />
+      </div>
+    );
+  }
+
   return (
     <div className="h-[228px] p-3 rounded-2xl mx-auto bg-[#FFFFFF]">
       {/* 위치 및 더보기 버튼 */}
@@ -58,7 +68,9 @@ export default function WeatherDashboard() {
           onClick={() => setIsOpen(true)}
         >
           <MapPin />
-          <p className="text-nowrap">{locationName}</p>
+          <p className="text-nowrap">
+            {locationName ? `${locationName}` : '위치 불러오는 중'}
+          </p>
         </button>
         {/* <Address /> */}
         {/* 모달창 */}
@@ -105,9 +117,9 @@ export default function WeatherDashboard() {
             <table className="w-full ">
               <tbody>
                 <tr className="gap-6">
-                  <th className="text-left py-2">우편번호</th>
-                  <th className="text-left py-2">도로명 주소</th>
-                  <th className="text-left py-2">선택여부</th>
+                  <th className="text-left text-nowrap py-2">우편번호</th>
+                  <th className="text-left text-nowrap py-2">도로명 주소</th>
+                  <th className="text-left text-nowrap py-2">선택여부</th>
                 </tr>
                 {results?.documents?.map((doc, index) => (
                   <tr

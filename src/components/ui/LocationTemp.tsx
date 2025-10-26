@@ -149,7 +149,7 @@ export default function LocationTemp() {
       </div>
       {/* 시간대별 날씨 */}
       <div
-        className="flex overflow-x-auto gap-5 min-w-full scrollbar-hide"
+        className="flex overflow-x-auto gap-5 min-w-full scrollbar-hide scroll-smooth"
         style={{
           scrollbarWidth: 'none', // Firefox
           msOverflowStyle: 'none', // IE/Edge
