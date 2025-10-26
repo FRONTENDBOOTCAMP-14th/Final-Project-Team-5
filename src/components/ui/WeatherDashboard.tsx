@@ -118,7 +118,7 @@ export default function WeatherDashboard() {
               <tbody>
                 <tr className="gap-6">
                   <th className="text-left text-nowrap py-2">우편번호</th>
-                  <th className="text-left text-nowrap py-2">도로명 주소</th>
+                  <th className="text-left text-nowrap py-4">도로명 주소</th>
                   <th className="text-left text-nowrap py-2">선택여부</th>
                 </tr>
                 {results?.documents?.map((doc, index) => (
@@ -136,7 +136,7 @@ export default function WeatherDashboard() {
                         <>({results.documents[0].road_address.zone_no})</>
                       )}
                     </td>
-                    <td className="py-2">
+                    <td className="py-4">
                       {results?.documents?.[0]?.address_name}
                       {results?.documents?.[0]?.road_address?.building_name && (
                         <>({results.documents[0].road_address.building_name})</>
@@ -175,6 +175,7 @@ export default function WeatherDashboard() {
                 }
                 setQuery('');
                 setResults(null);
+                setIsSelect(null);
               }}
             >
               변경
