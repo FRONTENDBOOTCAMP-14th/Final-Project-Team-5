@@ -22,7 +22,7 @@
 
 ### 🔗 배포사이트
 [<img width="234" height="163" alt="image" src="https://github.com/user-attachments/assets/0a73d419-c646-4428-b1e7-be3a003ff1d7" />
-](https://final-project-team-5-n2d1f3whv-icejacks-projects.vercel.app/)
+](https://final-project-team-5-ten.vercel.app/)
 
 ### 🔰 프로젝트 팀원 소개
 | 김민지 | 안동원 | 윤정화 | 👑조석근 | 
@@ -44,22 +44,39 @@
 │   └── settings.json
 ├── 📁 node_modules
 ├── 🌐 public
+│   ├── 📁 codi
+│   ├── 📁 email
+│   ├── 📁 hanger
+│   └── 📁 weather
 ├── 📁 src
 │   ├── 📁 @types
 │   │   └── global.d.ts
 │   ├── 📁 app
+│   │   ├── 📁 account
+│   │   │   │   └── page.tsx
 │   │   ├── 📁 api
+│   │   │   ├── 📁 account
+│   │   │   │   └── route.ts
 │   │   │   ├── 📁 location
 │   │   │   │   └── route.ts
+│   │   │   └── 📁 search
+│   │   │       └── route.ts
 │   │   ├── 📁 auth
 │   │   │   ├── 📁 callback
 │   │   │   │   └── route.ts
+│   │   │   ├── 📁 reset
+│   │   │   │   └── page.tsx
 │   │   │   ├── 📁 setup
 │   │   │   │   └── page.tsx
 │   │   │   ├── 📁 signin
 │   │   │   │   └── page.tsx
-│   │   │   └── 📁 singup
+│   │   │   ├── 📁 singup
 │   │   │   │   └── page.tsx
+│   │   │   └── 📁 update
+│   │   │       └── page.tsx
+│   │   ├── 📁 main
+│   │   │   └── 📁 cloth
+│   │   │       └── page.tsx
 │   │   ├── 📁 profile
 │   │   │   └── page.tsx
 │   │   ├── 📁 weather
@@ -68,6 +85,7 @@
 │   │   └── page.tsx
 │   ├── 📁 components
 │   │   ├── 📁 ui
+│   │   │   ├── BackButton.tsx
 │   │   │   ├── Button.tsx
 │   │   │   ├── CodiList.tsx
 │   │   │   ├── FavoriteCodiList.tsx
@@ -75,7 +93,11 @@
 │   │   │   ├── Frame.tsx
 │   │   │   ├── ImageForm.tsx
 │   │   │   ├── ImageList.tsx
+│   │   │   ├── ImageModal.tsx
 │   │   │   ├── Input.tsx
+│   │   │   ├── KeywordList.tsx
+│   │   │   ├── LocationTemp.tsx
+│   │   │   ├── MainCarousel.tsx
 │   │   │   ├── Modal.tsx
 │   │   │   ├── MyCodiList.tsx
 │   │   │   ├── NavigationBar.tsx
@@ -83,21 +105,27 @@
 │   │   │   ├── OnboardingModal.tsx
 │   │   │   ├── ProfileSheet.tsx
 │   │   │   ├── ProfileTab.tsx
-│   │   │   ├── Section.tsx
 │   │   │   ├── SnsButton.tsx
 │   │   │   ├── Spinner.tsx
-│   │   │   └── WeatherDashboard.tsx
+│   │   │   ├── WeatherDashboard.tsx
+│   │   │   ├── WeatherSimpleBar.tsx
+│   │   │   └── WeatherWeekly.tsx
 │   │   └── index.ts
 │   ├── 📁 hooks
 │   │   ├── useGeoLocation.ts
+│   │   ├── useLocationData.ts
+│   │   └── useLocationName.ts
 │   ├── 📁 libs
+│   │   ├── 📁 store
+│   │   │   └── weatherStore.ts
 │   │   ├── 📁 supabase
 │   │   │   ├── client.ts
 │   │   │   ├── codistore.ts
 │   │   │   ├── database.types.ts
 │   │   │   └── server.ts
 │   │   ├── getLocation.ts
-│   │   └── getWeather.ts
+│   │   ├── getWeather.ts
+│   │   └── loadSearch.ts
 │   ├── 📁 styles
 │   │   └── main.css
 │   ├── 📁 utils
@@ -116,7 +144,6 @@
 ├── pull_request_template.md
 ├── README.md   
 └── tsconfig.json
-              
 ```
 </details>
 

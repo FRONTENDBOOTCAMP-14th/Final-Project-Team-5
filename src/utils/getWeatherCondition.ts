@@ -12,7 +12,7 @@ export default function GetWeatherIcon(condition: string) {
     case 'thunderstorm':
       return '/weather/thunder.svg';
     default:
-      return 'weather/rainbow.svg';
+      return '/weather/rainbow.svg';
   }
 }
 

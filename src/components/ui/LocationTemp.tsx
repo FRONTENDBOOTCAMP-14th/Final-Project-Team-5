@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import type { WeatherData, TempData } from '@/@types/global.d.ts';
 import useGeoLocation from '@/hooks/useGeoLocation';
 import GetWeather, { GetWeatherForecast } from '@/libs/getWeather';
+import { useWeatherStore } from '@/libs/store/weatherStore';
 import GetWeatherIcon, {
   GetWeatherCondition,
 } from '@/utils/getWeatherCondition';
@@ -22,15 +23,21 @@ export default function LocationTemp() {
   // 현재 위치 가져오기
   const { lat, lon } = useGeoLocation();
 
+  // 변경 위치 가져오기
+  const { currentLat, currentLon } = useWeatherStore();
+
+  const updateLat = currentLat ?? lat;
+  const updateLon = currentLon ?? lon;
+
   useEffect(() => {
-    if (!lat || !lon) return;
+    if (!updateLat || !updateLon) return;
 
     const abortController = new AbortController();
 
     // 현재 위치 기반 날씨 가져오기
     async function FetchWeatherData() {
       try {
-        const weatherData = await GetWeather(lat, lon);
+        const weatherData = await GetWeather(updateLat, updateLon);
         setData(weatherData);
       } catch (error) {
         console.error(error);
@@ -41,7 +48,7 @@ export default function LocationTemp() {
     // 하루 최저,최고기온 구하기
     async function FetchTempData() {
       try {
-        const temp = await GetWeatherForecast(lat, lon);
+        const temp = await GetWeatherForecast(updateLat, updateLon);
         setTemp(temp);
 
         const today = temp.list[0].dt_txt.split(' ')[0];
@@ -77,7 +84,7 @@ export default function LocationTemp() {
     return () => {
       abortController.abort();
     };
-  }, [lat, lon]);
+  }, [updateLat, updateLon]);
 
   // 일기예보 시간대별 온도 구하기
   useEffect(() => {
@@ -86,7 +93,7 @@ export default function LocationTemp() {
     const iconArray = [];
 
     if (temp?.list?.length) {
-      const limit = Math.min(6, temp.list.length);
+      const limit = Math.min(8, temp.list.length);
 
       for (let i = 0; i < limit; i++) {
         const unixTime = temp?.list[i]?.dt;
@@ -141,16 +148,24 @@ export default function LocationTemp() {
         </div>
       </div>
       {/* 시간대별 날씨 */}
-      <div className="flex w-full gap-5 overflow-x-auto overscroll-x-auto">
-        <div className="flex flex-col items-center">
-          <p className="text-sm whitespace-nowrap">지금</p>
-          <p>{locationTemp}°C</p>
-          <Image
-            src={iconPath}
-            alt={String(description)}
-            width={22}
-            height={22}
-          />
+      <div
+        className="flex overflow-x-auto gap-5 min-w-full scrollbar-hide scroll-smooth"
+        style={{
+          scrollbarWidth: 'none', // Firefox
+          msOverflowStyle: 'none', // IE/Edge
+        }}
+      >
+        <div className="flex flex-row overscroll-contain">
+          <div className="flex flex-col items-center">
+            <p className="text-sm whitespace-nowrap">지금</p>
+            <p>{locationTemp}°C</p>
+            <Image
+              src={iconPath}
+              alt={String(description)}
+              width={22}
+              height={22}
+            />
+          </div>
         </div>
         {forecastTime.map((hour, i) => (
           <div key={hour} className="flex flex-col items-center">

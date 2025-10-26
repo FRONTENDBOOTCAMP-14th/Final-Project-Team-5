@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import type { WeatherData } from '@/@types/global.d.ts';
 import useGeoLocation from '@/hooks/useGeoLocation';
 import { GetWeatherForecast } from '@/libs/getWeather';
+import { useWeatherStore } from '@/libs/store/weatherStore';
 import GetWeatherIcon from '@/utils/getWeatherCondition';
 
 export default function WeatherWeekly() {
@@ -17,15 +18,22 @@ export default function WeatherWeekly() {
 
   // 현재 위치 가져오기
   const { lat, lon } = useGeoLocation();
+
+  // 변경 위치 가져오기
+  const { currentLat, currentLon } = useWeatherStore();
+
+  const updateLat = currentLat ?? lat;
+  const updateLon = currentLon ?? lon;
+
   // 현재 위치의 5일간의 최저, 최고기온 구하기
   useEffect(() => {
-    if (!lat || !lon) return;
+    if (!updateLat || !updateLon) return;
 
     const abortController = new AbortController();
 
     async function fetchWeekWeather() {
       try {
-        const temp = await GetWeatherForecast(lat, lon);
+        const temp = await GetWeatherForecast(updateLat, updateLon);
 
         const dailyGroup: Record<string, WeatherData[]> = {};
 
@@ -77,7 +85,7 @@ export default function WeatherWeekly() {
     return () => {
       abortController.abort();
     };
-  }, [lat, lon]);
+  }, [updateLat, updateLon]);
 
   // 날짜 및 요일 구하기
   useEffect(() => {
@@ -104,20 +112,20 @@ export default function WeatherWeekly() {
   }, []);
 
   return (
-    <section className="flex flex-col mx-11">
+    <section className="flex flex-col mx-auto">
       <h2 className="sr-only">일주일 일기예보</h2>
-      <p className="text-[18px] font-medium text-left text-nowrap mt-7 mb-5">
+      <p className="text-[18px] font-medium text-left text-nowrap mt-7 mb-5 mx-6">
         앞으로 7일 동안은 이런 날씨에요!
       </p>
 
       {date.map((d: string, i: number) => (
         <div
           key={d}
-          className={`w-full h-[55px] ${i === 0 ? 'bg-[#D2E4Fb]' : ''} flex items-center justify-center mx-auto`}
+          className={`h-[55px] ${i === 0 ? 'bg-[#D2E4Fb]' : ''} flex items-center justify-center`}
         >
           <p className="flex gap-4 mr-6">
             <span>{d}</span>
-            <span className="w-[28px] text-center">
+            <span className="w-[28px] text-center text-nowrap">
               {i === 0 ? '오늘' : dayName[i]}
             </span>
           </p>

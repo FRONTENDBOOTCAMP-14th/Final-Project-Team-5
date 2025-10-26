@@ -1,4 +1,3 @@
-import { ArrowLeft } from 'lucide-react';
 import {
   Frame,
   WeatherDashboard,
@@ -8,7 +7,7 @@ import {
 
 export default function WeatherDetails() {
   return (
-    <Frame>
+    <Frame paddingX={24}>
       <BackButton />
       <WeatherDashboard />
       <WeatherWeekly />
