@@ -9,6 +9,8 @@ export const useWeatherStore = create<{
     currentLon: number | undefined,
     selectedLocation: string | undefined
   ) => void;
+  currentTemp: number | undefined;
+  setCurrentTemp: (t: number | undefined) => void;
 }>((set) => {
   return {
     currentLat: undefined,
@@ -20,5 +22,7 @@ export const useWeatherStore = create<{
         currentLon: lon,
         selectedLocation: address,
       }),
+    currentTemp: undefined,
+    setCurrentTemp: (t) => set({ currentTemp: t }),
   };
 });
