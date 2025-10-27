@@ -84,7 +84,7 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
 
       // 파일 경로 지정
       const filePath = `${userId}/${Date.now()}_${file.name}`;
-      console.log('uploading to path:', filePath, 'bucket: imageStorage');
+      console.warn('Uploading image to:', filePath);
 
       // 파일 업로드
       const { data: uploadData, error: uploadError } =
@@ -101,7 +101,7 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
         return;
       }
 
-      console.log('uploadData', uploadData);
+      console.warn('uploadData', uploadData);
 
       // 퍼블릭 URL 생성
       const { data: urlData } = imageStorage.getPublicUrl(filePath);
@@ -113,7 +113,7 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
         return;
       }
 
-      // ✅ Supabase DB에 삽입
+      // Supabase DB에 삽입
       const { error: insertError } = await supabase.from('board').insert({
         image: publicUrl,
         text: trimmedHashtag,
