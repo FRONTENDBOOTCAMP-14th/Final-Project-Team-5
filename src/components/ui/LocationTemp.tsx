@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import type { WeatherData, TempData } from '@/@types/global.d.ts';
@@ -24,7 +24,7 @@ export default function LocationTemp() {
   const { lat, lon } = useGeoLocation();
 
   // 변경 위치 가져오기
-  const { currentLat, currentLon } = useWeatherStore();
+  const { currentLat, currentLon, setCurrentTemp } = useWeatherStore();
 
   const updateLat = currentLat ?? lat;
   const updateLon = currentLon ?? lon;
@@ -57,8 +57,8 @@ export default function LocationTemp() {
           return std.includes(today);
         });
 
-        const maxArray = [];
-        const minArray = [];
+        const maxArray: number[] = [];
+        const minArray: number[] = [];
 
         for (let i = 0; i < todayWeather.length; i++) {
           const max_value = Math.max(temp.list[i].main.temp_max);
@@ -88,9 +88,9 @@ export default function LocationTemp() {
 
   // 일기예보 시간대별 온도 구하기
   useEffect(() => {
-    const timeArray = [];
-    const tempArray = [];
-    const iconArray = [];
+    const timeArray: string[] = [];
+    const tempArray: number[] = [];
+    const iconArray: string[] = [];
 
     if (temp?.list?.length) {
       const limit = Math.min(8, temp.list.length);
@@ -124,7 +124,20 @@ export default function LocationTemp() {
   const conditionDescription = data?.weather?.[0]?.description ?? '';
   const description = GetWeatherCondition(conditionDescription);
 
+  const locationTempNum = useMemo<number | undefined>(() => {
+    const v = data?.main?.temp;
+    return typeof v === 'number' && Number.isFinite(v)
+      ? Math.ceil(v)
+      : undefined;
+  }, [data?.main?.temp]);
+
+  useEffect(() => {
+    setCurrentTemp(locationTempNum);
+  }, [locationTempNum, setCurrentTemp]);
+
+  // 기존 표시용: 숫자 or '현재 온도' (UI는 그대로 유지)
   const locationTemp = Math.ceil(data?.main?.temp ?? 0) || '현재 온도';
+
   return (
     <>
       {/* 현재 온도 및 간략한 날씨정보란 */}

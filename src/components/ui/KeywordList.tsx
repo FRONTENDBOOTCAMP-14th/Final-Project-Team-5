@@ -3,12 +3,34 @@
 import React from 'react';
 import FilterButton from '@/components/ui/FilterButton';
 
-interface FilterBarProps {
+interface KeywordListProps {
   keywords: string[];
   className?: string;
+  selected?: string[];
+  onSelect?: (kw: string) => void;
+  value?: string | null;
+  onChange?: (kw: string) => void;
 }
 
-const FilterBar: React.FC<FilterBarProps> = ({ keywords, className = '' }) => {
+const KeywordList: React.FC<KeywordListProps> = ({
+  keywords,
+  className = '',
+  selected,
+  onSelect,
+  value,
+  onChange,
+}) => {
+  const isSelected = (kw: string) =>
+    Array.isArray(selected) ? selected.includes(kw) : value === kw;
+
+  const handleClick = (e: React.MouseEvent, kw: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (onSelect) return onSelect(kw);
+    if (onChange) return onChange(kw);
+  };
+
   return (
     <div
       className={[
@@ -18,13 +40,27 @@ const FilterBar: React.FC<FilterBarProps> = ({ keywords, className = '' }) => {
         className,
       ].join(' ')}
     >
-      {keywords.map((word, i) => (
-        <FilterButton key={i} className="shrink-0">
-          {word}
-        </FilterButton>
-      ))}
+      {keywords.map((word) => {
+        const on = isSelected(word);
+        return (
+          <FilterButton
+            key={word}
+            type="button"
+            aria-pressed={on}
+            onClick={(e: React.MouseEvent) => handleClick(e, word)}
+            className={[
+              'shrink-0',
+              on
+                ? 'bg-[#EBF7FF] text-[#388BFE] border border-[#B7D9FF]'
+                : 'bg-white text-black border border-gray-300',
+            ].join(' ')}
+          >
+            {word}
+          </FilterButton>
+        );
+      })}
     </div>
   );
 };
 
-export default FilterBar;
+export default KeywordList;
