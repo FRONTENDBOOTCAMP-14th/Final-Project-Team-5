@@ -9,7 +9,11 @@ export default function ProfileTab() {
 
   return (
     <div className="w-full max-w-md mx-auto p-4 pb-[72px]">
-      <div role="group" aria-label="코디 탭 선택" className="flex">
+      <div
+        role="group"
+        aria-label="코디 탭 선택"
+        className="flex border-b border-gray-300"
+      >
         <button
           type="button"
           aria-label="관심코디 탭으로 이동"

@@ -38,8 +38,8 @@ export default function CodiList() {
     '클래식',
     '워크웨어',
   ];
-  const genders = ['남', '여'];
-  const seasons = ['봄', '여름', '가을', '겨울'];
+  const genders = ['male', 'female'];
+  const seasons = ['spring', 'summer', 'autumn', 'winter'];
 
   useEffect(() => {
     const fetchUser = async () => {
