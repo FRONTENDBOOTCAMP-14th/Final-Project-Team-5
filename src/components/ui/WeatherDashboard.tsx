@@ -89,14 +89,16 @@ export default function WeatherDashboard() {
                 placeholder="예) 도로명 주소로 검색해보세요 (예: 반포대로 58)"
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    if (query.length === 0) {
-                      toast.warning('주소를 입력해주세요!');
-                    } else if (results?.documents?.length === 0) {
-                      toast.warning('일치하는 검색결과가 없습니다!');
-                    }
+                  if (e.key !== 'Enter') return;
+
+                  if (query.length === 0) {
+                    toast.warning('주소를 입력해주세요!');
                   }
                   void handleSearch(deferredQuery);
+
+                  if (results?.documents?.length === 0) {
+                    toast.warning('일치하는 검색결과가 없습니다!');
+                  }
                 }}
                 className="mb-4"
               />
@@ -127,14 +129,22 @@ export default function WeatherDashboard() {
             </div>
 
             {/* 결과표시 */}
-            <div className="max-h-[400px] overflow-y-auto">
+            <div
+              className="max-h-[400px] overflow-y-auto scroll scrollbar-hide scroll-smooth"
+              style={{
+                scrollbarWidth: 'none', // Firefox
+                msOverflowStyle: 'none', // IE/Edge
+              }}
+            >
               <table className="w-full">
-                <tbody>
+                <thead className="sticky top-0 bg-[#FFFFFF]">
                   <tr className="gap-6">
                     <th className="text-left text-nowrap py-2">우편번호</th>
                     <th className="text-left text-nowrap py-4">도로명 주소</th>
                     <th className="text-left text-nowrap py-2">선택여부</th>
                   </tr>
+                </thead>
+                <tbody>
                   {results?.documents?.map((doc, index) => (
                     <tr
                       key={index}
@@ -146,22 +156,14 @@ export default function WeatherDashboard() {
                       }`}
                     >
                       <td className="py-2">
-                        {results?.documents?.[0]?.road_address?.zone_no && (
-                          <>({results?.documents?.[0]?.road_address.zone_no})</>
+                        {doc.road_address?.zone_no && (
+                          <>({doc.road_address.zone_no})</>
                         )}
                       </td>
-                      <td className="py-4">
-                        {results?.documents?.[0]?.address_name}
-                        {results?.documents?.[0]?.road_address
-                          ?.building_name && (
-                          <>
-                            (
-                            {
-                              results?.documents?.[0]?.road_address
-                                .building_name
-                            }
-                            )
-                          </>
+                      <td className="py-2">
+                        {doc.address_name}
+                        {doc.road_address?.building_name && (
+                          <>({doc.road_address.building_name})</>
                         )}
                       </td>
                       <td className="text-center items-center">
