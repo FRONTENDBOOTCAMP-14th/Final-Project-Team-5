@@ -5,19 +5,19 @@ import Image from 'next/image';
 import BackButton from '@/components/ui/BackButton';
 
 interface Author {
-  username?: string;
-  profile_url?: string;
+  username?: string | null;
+  profile_url?: string | null;
 }
 
 interface ImageModalProps {
   open: boolean;
   onClose: () => void;
   data?: {
-    image?: string;
-    text?: string;
-    keyword?: string;
-    created_at?: string;
-    author?: Author;
+    image?: string | null;
+    text?: string | null;
+    keyword?: string | null;
+    created_at?: string | null;
+    author?: Author | null;
   };
 }
 
@@ -26,7 +26,7 @@ export default function ImageModal({ open, onClose, data }: ImageModalProps) {
 
   const src = data?.image ?? '';
   const nickname = data?.author?.username ?? '알 수 없음';
-  const avatar = data?.author?.profile_url ?? '"/hanger/logo.png"';
+  const avatar = data?.author?.profile_url ?? '/hanger/logo.png';
   const text = data?.text ?? '';
   const keyword = data?.keyword ?? '';
   const createdAt = data?.created_at
@@ -35,7 +35,6 @@ export default function ImageModal({ open, onClose, data }: ImageModalProps) {
 
   return (
     <div className="absolute inset-0 bg-white z-50 flex flex-col">
-<<<<<<< HEAD
       {/* 상단 영역 */}
         {/* 닫기 버튼 */}
         <BackButton onClick={onClose} className="w-auto px-2 py-2 text-sm">
@@ -60,19 +59,14 @@ export default function ImageModal({ open, onClose, data }: ImageModalProps) {
       </div>
 
       {/* 이미지 본문 */}
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-=======
-      <BackButton onClick={onClose} className="w-auto px-2 py-2">
-        닫기
-      </BackButton>
-
-      <div className="flex-1 flex items-center justify-center">
->>>>>>> 150067a2b642c6b9e27ab9ef3f022a0e21a4ef14
+      <div className="relative flex-1 flex items-center justify-center bg-gray-50">
         {src ? (
           <Image
             src={src}
             alt="image preview"
-            className="max-w-full max-h-full object-contain"
+            fill
+            className="object-contain"
+            unoptimized // (Supabase signed URL이면 캐싱 없이 바로 표시)
           />
         ) : (
           <div className="text-[18px] font-semibold text-gray-500">

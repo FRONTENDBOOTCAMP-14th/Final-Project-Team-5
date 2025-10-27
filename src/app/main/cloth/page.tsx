@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CreateClient } from '@/libs/supabase/client';
+
 import Frame from '@/components/ui/Frame';
 import ImageList from '@/components/ui/ImageList';
 import ImageModal from '@/components/ui/ImageModal';
@@ -36,7 +38,9 @@ type BoardWithMetrics = BoardBase & {
   bookmark_rate_per_hour: number;
 };
 
-function getSeasonEN(currentTemp: number | undefined): 'winter' | 'spring' | 'summer' | 'autumn' | null {
+function getSeasonEN(
+  currentTemp: number | undefined
+): 'winter' | 'spring' | 'summer' | 'autumn' | null {
   const m = new Date().getMonth() + 1;
   if (currentTemp !== undefined && currentTemp < 5) return 'winter';
   if (currentTemp !== undefined && currentTemp >= 30) return 'summer';
@@ -53,49 +57,107 @@ function hoursSince(dateISO: string): number {
 }
 
 export default function LandingPage() {
-  const [_modalOpen, _setModalOpen] = React.useState(false);
-  const [_selectedBoard, _setSelectedBoard] = React.useState<any | null>(null);
+  const router = useRouter();
+  const supabase = CreateClient();
 
-  // 메인 그리드용 게시글
-  const [boards, setBoards] = React.useState<BoardBase[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  // 온보딩 모달
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // 캐러셀용 Top5 게시글
-  const [topBoards, setTopBoards] = React.useState<BoardWithMetrics[]>([]);
-  const [loadingTop, setLoadingTop] = React.useState(true);
+  // 이미지 모달
+  const [_modalOpen, _setModalOpen] = useState(false);
+  const [_selectedBoard, _setSelectedBoard] = useState<BoardBase | null>(null);
+
+  // 메인 그리드/캐러셀 데이터
+  const [boards, setBoards] = useState<BoardBase[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [topBoards, setTopBoards] = useState<BoardWithMetrics[]>([]);
+  const [loadingTop, setLoadingTop] = useState(true);
 
   const keywords = ['캐주얼', '스트릿', '미니멀', '스포티', '클래식', '워크웨어'];
 
   // 현재 기온 → 시즌
   const currentTemp = useWeatherStore((s) => s.currentTemp);
-  const season = React.useMemo(() => getSeasonEN(currentTemp), [currentTemp]);
+  const season = useMemo(() => getSeasonEN(currentTemp), [currentTemp]);
 
-  // 로그인된 유저 정보 콘솔 출력
-  const [user, setUser] = React.useState<any | null>(null);
-  React.useEffect(() => {
-    const supabase = CreateClient();
+  // (선택) 로그인 상태 콘솔 확인 및 유지
+  useEffect(() => {
+    let unsub: { unsubscribe: () => void } | null = null;
 
     (async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
         console.error('[Supabase] getUser error:', error);
       } else {
-        setUser(data.user ?? null);
         console.log('[Supabase] current user:', data.user);
       }
     })();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[Supabase] auth event:', event);
       console.log('[Supabase] session user:', session?.user);
-      setUser(session?.user ?? null);
     });
+    unsub = { unsubscribe: data.subscription.unsubscribe };
 
     return () => {
-      subscription.unsubscribe();
+      unsub?.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
+
+  // 온보딩 상태 체크
+  useEffect(() => {
+    (async function CheckOnboardingStatus() {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          router.push('/auth/signin');
+          return;
+        }
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('has_seen_onboarding')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('프로필 조회 에러:', error);
+          return;
+        }
+
+        if (profile && !profile.has_seen_onboarding) {
+          setShowOnboarding(true);
+        }
+      } catch (err) {
+        console.error('온보딩 체크 에러:', err);
+      }
+    })();
+  }, [router, supabase]);
+
+  // 온보딩 모달 닫기 및 상태 업데이트
+  async function HandleOnboardingClose() {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ has_seen_onboarding: true })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      setShowOnboarding(false);
+    } catch (err) {
+      console.error('온보딩 상태 업데이트 에러:', err);
+      setShowOnboarding(false);
+    }
+  }
 
   const handleImageClick = (board: BoardBase) => {
     _setSelectedBoard(board);
@@ -103,9 +165,8 @@ export default function LandingPage() {
   };
 
   // 메인 그리드: 시즌 기준 최근 글
-  React.useEffect(() => {
+  useEffect(() => {
     let aborted = false;
-    const supabase = CreateClient();
 
     (async () => {
       try {
@@ -114,7 +175,8 @@ export default function LandingPage() {
 
         let query = supabase
           .from('board')
-          .select(`
+          .select(
+            `
             board_uuid,
             created_at,
             user_id,
@@ -124,7 +186,8 @@ export default function LandingPage() {
             gender,
             season,
             author:profiles ( id, username, profile_url )
-          `)
+          `
+          )
           .order('created_at', { ascending: false })
           .limit(30);
 
@@ -136,7 +199,7 @@ export default function LandingPage() {
         if (error) {
           setError(error.message);
         } else {
-          const typed = (data ?? []) as BoardBase[]; // ✅ 여기서 타입 캐스팅
+          const typed = (data ?? []) as BoardBase[];
           setBoards(typed);
         }
       } catch (e: any) {
@@ -146,29 +209,29 @@ export default function LandingPage() {
       }
     })();
 
-
     return () => {
       aborted = true;
     };
-  }, [season]);
+  }, [season, supabase]);
 
-  // 캐러셀: 지난 7일 내 "시간당 북마크 속도" 상위 5개
-  // 캐러셀: 지난 7일 내 "시간당 북마크 속도" 상위 5개 (항상 fallback 보장)
-React.useEffect(() => {
-  let aborted = false;
-  const supabase = CreateClient();
+  // 캐러셀: 지난 7일 "시간당 북마크 속도" 상위 5개 (강력한 fallback 포함)
+  useEffect(() => {
+    let aborted = false;
 
-  (async () => {
-    try {
-      setLoadingTop(true);
+    (async () => {
+      try {
+        setLoadingTop(true);
 
-      const now = new Date();
-      const weekAgoISO = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const now = new Date();
+        const weekAgoISO = new Date(
+          now.getTime() - 7 * 24 * 60 * 60 * 1000
+        ).toISOString();
 
-      // 1) 지난 7일 내 게시글
-      const { data: recentRaw, error: boardsErr } = await supabase
-        .from('board')
-        .select(`
+        // 1) 지난 7일 내 게시글
+        const { data: recentRaw, error: boardsErr } = await supabase
+          .from('board')
+          .select(
+            `
           board_uuid,
           created_at,
           user_id,
@@ -178,151 +241,162 @@ React.useEffect(() => {
           gender,
           season,
           author:profiles ( id, username, profile_url )
-        `)
-        .gte('created_at', weekAgoISO)
-        .order('created_at', { ascending: false })
-        .limit(200);
-
-      if (boardsErr) throw boardsErr;
-
-      let recentBoards = (recentRaw ?? []) as BoardBase[];
-
-      // 1-1) 7일 내 게시글이 아예 없으면 → 바로 최신 5개로 대체하고 종료
-      if (recentBoards.length === 0) {
-        const { data: latestRaw, error: latestErr } = await supabase
-          .from('board')
-          .select(`
-            board_uuid,
-            created_at,
-            user_id,
-            image,
-            text,
-            keyword,
-            gender,
-            season,
-            author:profiles ( id, username, profile_url )
-          `)
+        `
+          )
+          .gte('created_at', weekAgoISO)
           .order('created_at', { ascending: false })
-          .limit(5);
+          .limit(200);
 
-        if (latestErr) throw latestErr;
+        if (boardsErr) throw boardsErr;
 
-        const latest = (latestRaw ?? []) as BoardBase[];
-        if (!aborted) {
-          setTopBoards(
-            latest.map<BoardWithMetrics>((b) => ({
-              ...b,
-              bookmark_count_7d: 0,
-              bookmark_rate_per_hour: 0,
-            }))
-          );
-        }
-        return;
-      }
+        let recentBoards = (recentRaw ?? []) as BoardBase[];
 
-      const ids = recentBoards.map((b) => b.board_uuid);
-
-      // 2) 지난 7일 북마크 행들 가져와서 클라에서 카운트
-      const { data: bmRows, error: bmErr } = await supabase
-        .from('bookmark')
-        .select('board_id')
-        .in('board_id', ids)
-        .gte('created_at', weekAgoISO);
-
-      // 2-1) RLS 등으로 bookmark 조회 실패하면 → 최신 5개 대체
-      if (bmErr) {
-        console.warn('[Top5] bookmark select failed; fallback to latest 5:', bmErr);
-        const { data: latestRaw, error: latestErr } = await supabase
-          .from('board')
-          .select(`
-            board_uuid,
-            created_at,
-            user_id,
-            image,
-            text,
-            keyword,
-            gender,
-            season,
-            author:profiles ( id, username, profile_url )
-          `)
-          .order('created_at', { ascending: false })
-          .limit(5);
-
-        if (latestErr) throw latestErr;
-
-        const latest = (latestRaw ?? []) as BoardBase[];
-        if (!aborted) {
-          setTopBoards(
-            latest.map<BoardWithMetrics>((b) => ({
-              ...b,
-              bookmark_count_7d: 0,
-              bookmark_rate_per_hour: 0,
-            }))
-          );
-        }
-        return;
-      }
-
-      const counts = new Map<string, number>();
-      for (const row of bmRows ?? []) {
-        const key = (row as unknown as { board_id: string }).board_id;
-        counts.set(key, (counts.get(key) ?? 0) + 1);
-      }
-
-      // 3) 지표 붙이기
-      const withRate: BoardWithMetrics[] = recentBoards.map((b) => {
-        const cnt = counts.get(b.board_uuid) ?? 0;
-        const rate = cnt / hoursSince(b.created_at);
-        return {
-          ...b,
-          bookmark_count_7d: cnt,
-          bookmark_rate_per_hour: rate,
-        };
-      });
-
-      // 4) 정렬 → 상위 5개
-      withRate.sort((a, b) => b.bookmark_rate_per_hour - a.bookmark_rate_per_hour);
-      let top5: BoardWithMetrics[] = withRate.slice(0, 5);
-
-      // 5) 전부 0이거나 비어 있으면 → 최신 5개로 대체
-      if (top5.length === 0 || top5.every((x) => x.bookmark_count_7d === 0)) {
-        const { data: latestRaw, error: latestErr } = await supabase
-          .from('board')
-          .select(`
-            board_uuid,
-            created_at,
-            user_id,
-            image,
-            text,
-            keyword,
-            gender,
-            season,
-            author:profiles ( id, username, profile_url )
-          `)
-          .order('created_at', { ascending: false })
-          .limit(5);
-
-        if (latestErr) throw latestErr;
-
-        const latest = (latestRaw ?? []) as BoardBase[];
-        top5 = latest.map<BoardWithMetrics>((b) => ({
-          ...b,
-          bookmark_count_7d: 0,
-          bookmark_rate_per_hour: 0,
-        }));
-      }
-
-      if (!aborted) setTopBoards(top5);
-    } catch (e) {
-      console.error('[Top5] fatal error → fallback to latest 5:', e);
-
-      // 어떤 오류에도 마지막 안전장치: 최신 5개로 대체
-      if (!aborted) {
-        try {
-          const supabase = CreateClient();
-          const { data: latestRaw } = await supabase
+        // 1-1) 7일 내 게시글이 없으면 → 최신 5개로 대체
+        if (recentBoards.length === 0) {
+          const { data: latestRaw, error: latestErr } = await supabase
             .from('board')
-            .select(`
+            .select(
+              `
+            board_uuid,
+            created_at,
+            user_id,
+            image,
+            text,
+            keyword,
+            gender,
+            season,
+            author:profiles ( id, username, profile_url )
+          `
+            )
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+          if (latestErr) throw latestErr;
+
+          const latest = (latestRaw ?? []) as BoardBase[];
+          if (!aborted) {
+            setTopBoards(
+              latest.map<BoardWithMetrics>((b) => ({
+                ...b,
+                bookmark_count_7d: 0,
+                bookmark_rate_per_hour: 0,
+              }))
+            );
+          }
+          return;
+        }
+
+        const ids = recentBoards.map((b) => b.board_uuid);
+
+        // 2) 지난 7일 북마크 행들
+        const { data: bmRows, error: bmErr } = await supabase
+          .from('bookmark')
+          .select('board_id, created_at')
+          .in('board_id', ids)
+          .gte('created_at', weekAgoISO);
+
+        // 2-1) 실패 시 최신 5개로 대체
+        if (bmErr) {
+          console.warn(
+            '[Top5] bookmark select failed; fallback to latest 5:',
+            bmErr
+          );
+          const { data: latestRaw, error: latestErr } = await supabase
+            .from('board')
+            .select(
+              `
+            board_uuid,
+            created_at,
+            user_id,
+            image,
+            text,
+            keyword,
+            gender,
+            season,
+            author:profiles ( id, username, profile_url )
+          `
+            )
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+          if (latestErr) throw latestErr;
+
+          const latest = (latestRaw ?? []) as BoardBase[];
+          if (!aborted) {
+            setTopBoards(
+              latest.map<BoardWithMetrics>((b) => ({
+                ...b,
+                bookmark_count_7d: 0,
+                bookmark_rate_per_hour: 0,
+              }))
+            );
+          }
+          return;
+        }
+
+        const counts = new Map<string, number>();
+        for (const row of bmRows ?? []) {
+          const key = (row as unknown as { board_id: string }).board_id;
+          counts.set(key, (counts.get(key) ?? 0) + 1);
+        }
+
+        // 3) 지표 구성
+        const withRate: BoardWithMetrics[] = recentBoards.map((b) => {
+          const cnt = counts.get(b.board_uuid) ?? 0;
+          const rate = cnt / hoursSince(b.created_at);
+          return {
+            ...b,
+            bookmark_count_7d: cnt,
+            bookmark_rate_per_hour: rate,
+          };
+        });
+
+        // 4) 정렬 후 상위 5개
+        withRate.sort(
+          (a, b) => b.bookmark_rate_per_hour - a.bookmark_rate_per_hour
+        );
+        let top5: BoardWithMetrics[] = withRate.slice(0, 5);
+
+        // 5) 전부 0이거나 비어 있으면 최신 5개로 대체
+        if (top5.length === 0 || top5.every((x) => x.bookmark_count_7d === 0)) {
+          const { data: latestRaw, error: latestErr } = await supabase
+            .from('board')
+            .select(
+              `
+            board_uuid,
+            created_at,
+            user_id,
+            image,
+            text,
+            keyword,
+            gender,
+            season,
+            author:profiles ( id, username, profile_url )
+          `
+            )
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+          if (latestErr) throw latestErr;
+
+          const latest = (latestRaw ?? []) as BoardBase[];
+          top5 = latest.map<BoardWithMetrics>((b) => ({
+            ...b,
+            bookmark_count_7d: 0,
+            bookmark_rate_per_hour: 0,
+          }));
+        }
+
+        if (!aborted) setTopBoards(top5);
+      } catch (e) {
+        console.error('[Top5] fatal error → fallback to latest 5:', e);
+
+        if (!aborted) {
+          try {
+            const { data: latestRaw } = await supabase
+              .from('board')
+              .select(
+                `
               board_uuid,
               created_at,
               user_id,
@@ -332,32 +406,32 @@ React.useEffect(() => {
               gender,
               season,
               author:profiles ( id, username, profile_url )
-            `)
-            .order('created_at', { ascending: false })
-            .limit(5);
+            `
+              )
+              .order('created_at', { ascending: false })
+              .limit(5);
 
-          const latest = (latestRaw ?? []) as BoardBase[];
-          setTopBoards(
-            latest.map<BoardWithMetrics>((b) => ({
-              ...b,
-              bookmark_count_7d: 0,
-              bookmark_rate_per_hour: 0,
-            }))
-          );
-        } catch {
-          setTopBoards([]); // 정말 최후의 수단
+            const latest = (latestRaw ?? []) as BoardBase[];
+            setTopBoards(
+              latest.map<BoardWithMetrics>((b) => ({
+                ...b,
+                bookmark_count_7d: 0,
+                bookmark_rate_per_hour: 0,
+              }))
+            );
+          } catch {
+            setTopBoards([]);
+          }
         }
+      } finally {
+        if (!aborted) setLoadingTop(false);
       }
-    } finally {
-      if (!aborted) setLoadingTop(false);
-    }
-  })();
+    })();
 
-  return () => {
-    aborted = true;
-  };
-}, []);
-
+    return () => {
+      aborted = true;
+    };
+  }, [supabase]);
 
   const placeholder = (i: number) => `/images/sample${(i % 5) + 1}.jpg`;
 
@@ -365,6 +439,7 @@ React.useEffect(() => {
     <Frame paddingX={24} color="#D2E4FB">
       <WeatherDashboard />
       <WeatherSimpleBar style={{ marginTop: 20 }} />
+
       <span className="inline-block text-[18px] mt-[25px] font-bold">
         이렇게 입어보는거 어떤가요?
       </span>
@@ -376,32 +451,34 @@ React.useEffect(() => {
             id: b.board_uuid,
             image: b?.image && b.image.length > 0 ? b.image : placeholder(i),
             title: b?.text ?? '게시글',
-            sub: `북마크 ${b.bookmark_count_7d} • ${b.bookmark_rate_per_hour.toFixed(2)}/h`,
+            sub: `북마크 ${b.bookmark_count_7d} • ${b.bookmark_rate_per_hour.toFixed(
+              2
+            )}/h`,
           }))}
           onItemClick={(id) => {
-            console.log(id)
             const found = topBoards.find((x) => x.board_uuid === id);
             if (found) {
               _setSelectedBoard(found);
-              _setModalOpen(true); // ← ImageModal 열림
+              _setModalOpen(true);
             }
           }}
         />
       )}
 
-      
-
       <span>이렇게 입어보는 것도 추천해요!</span>
       <KeywordList keywords={keywords} />
 
-      {loading && <div className="mt-3 text-sm text-gray-500">불러오는 중…</div>}
-      {error && <div className="mt-3 text-sm text-red-600">불러오기 실패: {error}</div>}
+      {loading && (
+        <div className="mt-3 text-sm text-gray-500">불러오는 중…</div>
+      )}
+      {error && (
+        <div className="mt-3 text-sm text-red-600">불러오기 실패: {error}</div>
+      )}
 
       {!loading && !error && boards.length === 0 && (
         <div className="mt-4 text-sm text-gray-500">표시할 게시물이 없습니다.</div>
       )}
 
-      {/* 하단 그리드: 그대로 유지 */}
       {!loading && !error && boards.length > 0 && (
         <div className="grid grid-cols-2 gap-2 mt-4">
           {boards.map((b, i) => {
@@ -420,14 +497,16 @@ React.useEffect(() => {
       )}
 
       <NavigationBar />
+
       <ImageModal
         open={_modalOpen}
         onClose={() => _setModalOpen(false)}
         data={_selectedBoard ?? undefined}
       />
+
       <OnboardingModal
         isOpen={showOnboarding}
-        onClose={HandleOnboardingButtonClick}
+        onClose={HandleOnboardingClose}
       />
     </Frame>
   );
