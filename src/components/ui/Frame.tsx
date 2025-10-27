@@ -5,6 +5,7 @@ import React from 'react';
 type FrameProps = React.PropsWithChildren<{
   className?: string;
   paddingX?: number; // 좌우 패딩(px)
+  paddingTopY?: number; // 상단 패딩(px)
   color?: string; // 그라데이션 시작 색
 }>;
 
@@ -12,9 +13,11 @@ export default function Frame({
   children,
   className = '',
   paddingX,
+  paddingTopY,
   color,
 }: FrameProps) {
-  const hasPadding = typeof paddingX === 'number' && paddingX > 0;
+  const hasPaddingX = typeof paddingX === 'number' && paddingX > 0;
+  const hasPaddingTop = typeof paddingTopY === 'number' && paddingTopY > 0;
   const hasColor = typeof color === 'string' && color.length > 0;
 
   const [isMobile, setIsMobile] = React.useState(false);
@@ -52,8 +55,9 @@ export default function Frame({
           hasFooter ? 'pb-[82px]' : 'pb-0'
         }`}
         style={{
-          paddingLeft: hasPadding ? `${paddingX}px` : undefined,
-          paddingRight: hasPadding ? `${paddingX}px` : undefined,
+          paddingLeft: hasPaddingX ? `${paddingX}px` : undefined,
+          paddingRight: hasPaddingX ? `${paddingX}px` : undefined,
+          paddingTop: hasPaddingTop ? `${paddingTopY}px` : undefined,
         }}
       >
         {children}

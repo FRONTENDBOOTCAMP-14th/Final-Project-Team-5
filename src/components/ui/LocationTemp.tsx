@@ -126,7 +126,9 @@ export default function LocationTemp() {
 
   const locationTempNum = useMemo<number | undefined>(() => {
     const v = data?.main?.temp;
-    return typeof v === 'number' && Number.isFinite(v) ? Math.ceil(v) : undefined;
+    return typeof v === 'number' && Number.isFinite(v)
+      ? Math.ceil(v)
+      : undefined;
   }, [data?.main?.temp]);
 
   useEffect(() => {

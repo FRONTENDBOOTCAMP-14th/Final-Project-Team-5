@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import BackButton from '@/components/ui/BackButton';
 
@@ -19,9 +20,21 @@ interface ImageModalProps {
     created_at?: string | null;
     author?: Author | null;
   };
+
+  /** ⬇️ 추가: 모달 우측 컨트롤용 */
+  isBookmarked?: boolean;
+  bookmarkCount?: number;
+  onToggleBookmark?: () => void;
 }
 
-export default function ImageModal({ open, onClose, data }: ImageModalProps) {
+export default function ImageModal({
+  open,
+  onClose,
+  data,
+  isBookmarked = false,
+  bookmarkCount,
+  onToggleBookmark,
+}: ImageModalProps) {
   if (!open || !data) return null;
 
   const src = data?.image ?? '';
@@ -36,11 +49,9 @@ export default function ImageModal({ open, onClose, data }: ImageModalProps) {
   return (
     <div className="absolute inset-0 bg-white z-50 flex flex-col">
       {/* 상단 영역 */}
-        {/* 닫기 버튼 */}
-        <BackButton onClick={onClose} className="w-auto px-2 py-2 text-sm">
-        </BackButton>
+      <BackButton onClick={onClose} className="w-auto px-2 py-2 text-sm" />
       <div className="flex items-center justify-between p-3 border-b">
-        {/* 작성자 정보 */}
+        {/* 좌측: 작성자 정보 (그대로) */}
         <div className="flex items-center gap-3">
           <img
             src={avatar}
@@ -50,26 +61,53 @@ export default function ImageModal({ open, onClose, data }: ImageModalProps) {
           <div className="flex flex-col">
             <span className="text-sm font-semibold">{nickname}</span>
             <span className="text-xs text-gray-500">
-              {keyword ? `#${keyword}` : ''}{' '}
-              {createdAt ? `· ${createdAt}` : ''}
+              {keyword ? `#${keyword}` : ''} {createdAt ? `· ${createdAt}` : ''}
             </span>
           </div>
         </div>
 
+        {/* 우측: 북마크 수 + 버튼 */}
+        <div className="flex items-center gap-2">
+          {typeof bookmarkCount === 'number' && (
+            <span className="text-xs text-gray-700 min-w-[1ch] text-right">
+              북마크 {bookmarkCount}
+            </span>
+          )}
+          <button
+            type="button"
+            aria-pressed={isBookmarked}
+            title={isBookmarked ? '북마크 해제' : '북마크 등록'}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleBookmark?.();
+            }}
+            className="rounded-full bg-white/90 backdrop-blur px-2 py-1 shadow border border-gray-200 hover:bg-white"
+          >
+            <Heart
+              className={
+                isBookmarked ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-gray-700'
+              }
+              fill={isBookmarked ? 'currentColor' : 'transparent'}
+            />
+          </button>
+        </div>
       </div>
 
-      {/* 이미지 본문 */}
-      <div className="relative flex-1 flex items-center justify-center bg-gray-50">
+      {/* 이미지 본문: 가로 100%, 높이는 비율대로 */}
+      <div className="relative bg-gray-50">
         {src ? (
           <Image
             src={src}
             alt="image preview"
-            fill
-            className="object-contain"
-            unoptimized // (Supabase signed URL이면 캐싱 없이 바로 표시)
+            width={1200}
+            height={1600} // 대략 3:4 기본 비율 (실제는 width 100% / height auto로 렌더)
+            sizes="100vw"
+            style={{ width: '100%', height: 'auto' }}
+            className="block object-contain"
+            unoptimized
           />
         ) : (
-          <div className="text-[18px] font-semibold text-gray-500">
+          <div className="text-[18px] font-semibold text-gray-500 p-6">
             이미지가 없습니다.
           </div>
         )}
