@@ -8,9 +8,16 @@ import { X } from 'lucide-react';
 interface ModalProps {
   onClose: () => void;
   children: ReactNode;
+  title?: string;
+  height?: string;
 }
 
-export default function Modal({ onClose, children }: ModalProps) {
+export default function Modal({
+  onClose,
+  children,
+  title,
+  height = '80%',
+}: ModalProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -27,6 +34,7 @@ export default function Modal({ onClose, children }: ModalProps) {
       <div
         role="dialog"
         aria-modal="true"
+        aria-labelledby={title ? 'modal-title' : undefined}
         className="fixed inset-0 z-50 flex items-end justify-center"
       >
         <motion.div
@@ -36,14 +44,19 @@ export default function Modal({ onClose, children }: ModalProps) {
           exit={{ opacity: 0 }}
         />
         <motion.div
-          className="relative w-full max-w-md h-[80%] bg-white rounded-t-2xl p-4 flex flex-col"
+          className="relative w-full max-w-md bg-white rounded-t-2xl p-4 flex flex-col"
+          style={{ height }}
           initial={{ y: '100%', opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium">내 위치 선택</span>
+            {title ? (
+              <span className="text-sm font-medium">{title}</span>
+            ) : (
+              <div />
+            )}
             <button
               type="button"
               aria-label="위치 선택 모달 닫기"
