@@ -42,7 +42,7 @@ export default function OnboardingModal({
             aria-modal="true"
             aria-labelledby="modal-title"
             aria-describedby="modal-description"
-            className="relative w-full max-w-md h-[50%] bg-gradient-to-b from-blue-200 via-blue-50 to-white rounded-t-2xl p-4 flex flex-col justify-center"
+            className="relative w-full max-w-md mx-auto h-[50%] bg-gradient-to-b from-blue-200 via-blue-50 to-white rounded-t-2xl p-4 flex flex-col justify-center"
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '100%', opacity: 0 }}
