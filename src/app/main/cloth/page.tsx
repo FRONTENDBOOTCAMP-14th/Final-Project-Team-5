@@ -8,6 +8,7 @@ import ImageModal from '@/components/ui/ImageModal';
 import KeywordList from '@/components/ui/KeywordList';
 import MainCarousel from '@/components/ui/MainCarousel';
 import NavigationBar from '@/components/ui/NavigationBar';
+import OnboardingModal from '@/components/ui/OnboardingModal';
 import WeatherDashboard from '@/components/ui/WeatherDashboard';
 import WeatherSimpleBar from '@/components/ui/WeatherSimpleBar';
 import { useWeatherStore } from '@/libs/store/weatherStore';
@@ -423,6 +424,10 @@ React.useEffect(() => {
         open={_modalOpen}
         onClose={() => _setModalOpen(false)}
         data={_selectedBoard ?? undefined}
+      />
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={HandleOnboardingButtonClick}
       />
     </Frame>
   );

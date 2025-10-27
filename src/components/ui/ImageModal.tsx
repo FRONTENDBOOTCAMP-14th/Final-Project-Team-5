@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import BackButton from '@/components/ui/BackButton';
 
 interface Author {
@@ -34,6 +35,7 @@ export default function ImageModal({ open, onClose, data }: ImageModalProps) {
 
   return (
     <div className="absolute inset-0 bg-white z-50 flex flex-col">
+<<<<<<< HEAD
       {/* 상단 영역 */}
         {/* 닫기 버튼 */}
         <BackButton onClick={onClose} className="w-auto px-2 py-2 text-sm">
@@ -59,8 +61,15 @@ export default function ImageModal({ open, onClose, data }: ImageModalProps) {
 
       {/* 이미지 본문 */}
       <div className="flex-1 flex items-center justify-center bg-gray-50">
+=======
+      <BackButton onClick={onClose} className="w-auto px-2 py-2">
+        닫기
+      </BackButton>
+
+      <div className="flex-1 flex items-center justify-center">
+>>>>>>> 150067a2b642c6b9e27ab9ef3f022a0e21a4ef14
         {src ? (
-          <img
+          <Image
             src={src}
             alt="image preview"
             className="max-w-full max-h-full object-contain"
