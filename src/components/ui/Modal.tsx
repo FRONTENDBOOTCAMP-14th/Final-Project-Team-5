@@ -10,6 +10,7 @@ interface ModalProps {
   children: ReactNode;
   title?: string;
   height?: string;
+  isOpen?: boolean;
 }
 
 export default function Modal({
@@ -17,6 +18,7 @@ export default function Modal({
   children,
   title,
   height = '80%',
+  isOpen = true,
 }: ModalProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -28,6 +30,8 @@ export default function Modal({
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
