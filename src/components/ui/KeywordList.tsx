@@ -23,9 +23,7 @@ const KeywordList: React.FC<KeywordListProps> = ({
   mapToValue,
 }) => {
   const isSelected = (kw: string) =>
-    Array.isArray(selected)
-      ? selected.includes(kw)
-      : value === (mapToValue?.[kw] ?? kw);
+    Array.isArray(selected) ? selected.includes(kw) : value === kw;
 
   const handleClick = (e: React.MouseEvent, kw: string) => {
     e.preventDefault();

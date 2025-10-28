@@ -90,16 +90,36 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
       if (!publicUrl) throw new Error('퍼블릭 URL을 가져오지 못했습니다.');
 
       // Supabase DB에 삽입
+      const keywordMap: Record<string, string> = {
+        캐주얼: 'casual',
+        스트릿: 'street',
+        미니멀: 'minimal',
+        스포티: 'sporty',
+        클래식: 'classic',
+        워크웨어: 'workwear',
+      };
+
+      const genderMap: Record<string, string> = {
+        남성: 'male',
+        여성: 'female',
+      };
+
+      const seasonMap: Record<string, string> = {
+        봄: 'spring',
+        여름: 'summer',
+        가을: 'autumn',
+        겨울: 'winter',
+      };
+
       const { error: insertError } = await supabase.from('board').insert({
         image: publicUrl,
         text: description,
         user_id: userId,
         created_at: new Date().toISOString(),
-        keyword,
-        gender,
-        season,
+        keyword: keywordMap[keyword] ?? keyword,
+        gender: genderMap[gender] ?? gender,
+        season: seasonMap[season] ?? season,
       });
-
       if (insertError) throw insertError;
 
       toast.success('사진 업로드가 완료되었습니다!');
@@ -134,27 +154,18 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
     '클래식',
     '워크웨어',
   ];
-  const keywordMap: Record<string, string> = {
-    캐주얼: 'casual',
-    스트릿: 'street',
-    미니멀: 'minimal',
-    스포티: 'sporty',
-    클래식: 'classic',
-    워크웨어: 'workwear',
-  };
-
   const genderItems = ['남성', '여성'];
-  const genderMap: Record<string, string> = {
-    남성: 'male',
-    여성: 'female',
-  };
-
   const seasonItems = ['봄', '여름', '가을', '겨울'];
-  const seasonMap: Record<string, string> = {
-    봄: 'spring',
-    여름: 'summer',
-    가을: 'autumn',
-    겨울: 'winter',
+
+  // onSubmit에 async 함수를 직접 전달하면 lint에서 오류가 날 수 있으므로
+  // Promise를 명시적으로 catch 처리하는 래퍼를 만듭니다.
+  const onSubmitHandler = (e: React.FormEvent) => {
+    // handleUpload 내부에서 preventDefault를 호출하므로 여기서는 그대로 전달
+    void handleUpload(e).catch((err) => {
+      // 드물게 handleUpload 바깥에서 에러가 던져졌을 때를 대비한 안전장치
+      console.error('upload handler uncaught error', err);
+      toast.error('업로드 중 알 수 없는 오류가 발생했습니다.');
+    });
   };
 
   return (
@@ -170,7 +181,7 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
       )}
       <form
         className="flex flex-col items-center gap-3"
-        onSubmit={handleUpload}
+        onSubmit={onSubmitHandler}
       >
         {/* 사진 업로드시 클릭하여 진행 */}
         <label htmlFor="imageUpload" className="cursor-pointer">
@@ -217,7 +228,14 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
             keywords={keywordItems}
             value={keyword}
             onChange={setKeyword}
-            mapToValue={keywordMap}
+            mapToValue={{
+              캐주얼: 'casual',
+              스트릿: 'street',
+              미니멀: 'minimal',
+              스포티: 'sporty',
+              클래식: 'classic',
+              워크웨어: 'workwear',
+            }}
             className="mb-2"
           />
         </div>
@@ -226,7 +244,7 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
             keywords={genderItems}
             value={gender}
             onChange={setGender}
-            mapToValue={genderMap}
+            mapToValue={{ 남성: 'male', 여성: 'female' }}
             className="mb-2"
           />
         </div>
@@ -235,7 +253,12 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
             keywords={seasonItems}
             value={season}
             onChange={setSeason}
-            mapToValue={seasonMap}
+            mapToValue={{
+              봄: 'spring',
+              여름: 'summer',
+              가을: 'autumn',
+              겨울: 'winter',
+            }}
             className="mb-4"
           />
         </div>
