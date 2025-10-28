@@ -56,18 +56,54 @@ function hoursSince(dateISO: string): number {
   return Math.max(1 / 24, hours);
 }
 
+async function attachAuthors(
+  supabase: ReturnType<typeof CreateClient>,
+  rows: Array<{
+    board_uuid: string;
+    created_at: string;
+    user_id: string;
+    image: string | null;
+    text: string;
+    keyword: string | null;
+    gender: string | null;
+    season: string | null;
+  }>
+): Promise<BoardBase[]> {
+  const ids = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)));
+  if (ids.length === 0) {
+    return rows.map(r => ({
+      ...r,
+      author: { id: r.user_id, username: null, profile_url: null },
+    })) as BoardBase[];
+  }
+
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username, profile_url')
+    .in('id', ids);
+
+  const map = new Map<string, Profile>();
+  for (const p of profiles ?? []) {
+    const pr = p as unknown as Profile;
+    map.set(pr.id, pr);
+  }
+
+  return rows.map(r => ({
+    ...r,
+    author:
+      map.get(r.user_id) ?? { id: r.user_id, username: null, profile_url: null },
+  })) as BoardBase[];
+}
+
 export default function LandingPage() {
   const router = useRouter();
   const supabase = CreateClient();
 
-  // 온보딩 모달
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // 이미지 모달
   const [_modalOpen, _setModalOpen] = useState(false);
   const [_selectedBoard, _setSelectedBoard] = useState<BoardBase | null>(null);
 
-  // 메인 그리드/캐러셀 데이터
   const [boards, setBoards] = useState<BoardBase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -75,14 +111,11 @@ export default function LandingPage() {
   const [topBoards, setTopBoards] = useState<BoardWithMetrics[]>([]);
   const [loadingTop, setLoadingTop] = useState(true);
 
-  // 로그인/프로필
   const [me, setMe] = useState<string | null>(null);
   const [userGender, setUserGender] = useState<string | null>(null);
 
-  // 내 북마크 상태
   const [bookmarked, setBookmarked] = useState<Set<string>>(new Set());
 
-  // 캐러셀용 실시간 북마크 수
   const [bookmarkCounts, setBookmarkCounts] = useState<Map<string, number>>(
     new Map()
   );
@@ -96,7 +129,6 @@ export default function LandingPage() {
     });
   }
 
-  // 키워드
   const keywords = [
     '캐주얼',
     '스트릿',
@@ -112,11 +144,9 @@ export default function LandingPage() {
     );
   }
 
-  // 현재 기온 → 시즌
   const currentTemp = useWeatherStore((s) => s.currentTemp);
   const season = useMemo(() => getSeasonEN(currentTemp), [currentTemp]);
 
-  // 로그인/성별/내 북마크 초기 로딩
   useEffect(() => {
     let unsub: { unsubscribe: () => void } | null = null;
 
@@ -125,7 +155,6 @@ export default function LandingPage() {
       if (!error && data.user) {
         setMe(data.user.id);
 
-        // ✅ 프로필 성별 로딩
         const { data: profile } = await supabase
           .from('profiles')
           .select('gender')
@@ -133,7 +162,6 @@ export default function LandingPage() {
           .single();
         setUserGender(profile?.gender ?? null);
 
-        // 내 북마크 로딩
         const { data: myBms, error: bmErr } = await supabase
           .from('bookmark')
           .select('board_id')
@@ -155,7 +183,6 @@ export default function LandingPage() {
     };
   }, [supabase]);
 
-  // 온보딩 상태 체크
   useEffect(() => {
     void (async function CheckOnboardingStatus() {
       try {
@@ -188,7 +215,6 @@ export default function LandingPage() {
     })();
   }, [router, supabase]);
 
-  // 온보딩 닫기
   async function HandleOnboardingClose() {
     try {
       const {
@@ -214,7 +240,6 @@ export default function LandingPage() {
     _setModalOpen(true);
   };
 
-  // 북마크 토글 (캐러셀은 실시간 카운트 반영, 그리드는 숫자 반영 X)
   async function toggleBookmark(boardId: string) {
     if (!me) {
       router.push('/auth/signin');
@@ -256,7 +281,6 @@ export default function LandingPage() {
     }
   }
 
-  // 메인 그리드: 시즌 + 성별 + (다중)키워드 기준
   useEffect(() => {
     let aborted = false;
 
@@ -281,12 +305,11 @@ export default function LandingPage() {
             text,
             keyword,
             gender,
-            season,
-            author:profiles ( id, username, profile_url )
+            season
           `
           )
           .order('created_at', { ascending: false })
-          .limit(60); // 넉넉히 받고 클라에서 중복 제거
+          .limit(60);
 
         if (season) query = query.eq('season', season);
         if (userGender) query = query.eq('gender', userGender);
@@ -302,12 +325,13 @@ export default function LandingPage() {
         if (error) {
           setError(error.message);
         } else {
-          // 중복 제거 (여러 키워드에 걸려도 같은 게시글은 1번만)
-          const unique = new Map<string, BoardBase>();
-          for (const row of (data ?? []) as BoardBase[]) {
+          const unique = new Map<string, any>();
+          for (const row of data ?? []) {
             if (!unique.has(row.board_uuid)) unique.set(row.board_uuid, row);
           }
-          setBoards(Array.from(unique.values()));
+          const cleaned = Array.from(unique.values());
+          const withAuthor = await attachAuthors(supabase, cleaned);
+          setBoards(withAuthor);
         }
       } catch (e: any) {
         if (!aborted) setError(e?.message ?? '알 수 없는 오류');
@@ -321,7 +345,6 @@ export default function LandingPage() {
     };
   }, [season, userGender, selectedKeywords, supabase]);
 
-  // 캐러셀: 지난 7일 북마크 속도 Top5 (표시는 '북마크 N'만)
   useEffect(() => {
     let aborted = false;
 
@@ -345,23 +368,22 @@ export default function LandingPage() {
             text,
             keyword,
             gender,
-            season,
-            author:profiles ( id, username, profile_url )
+            season
           `
           )
           .gte('created_at', weekAgoISO)
           .order('created_at', { ascending: false })
           .limit(200);
 
-        // 캐러셀에도 성별 필터를 적용하려면 주석 해제
         if (userGender) q = q.eq('gender', userGender);
 
         const { data: recentRaw, error: boardsErr } = await q;
         if (boardsErr) throw boardsErr;
 
-        const recentBoards = (recentRaw ?? []) as BoardBase[];
+        const recentBoardsRaw =
+          (recentRaw ?? []) as unknown as Omit<BoardBase, 'author'>[];
 
-        if (recentBoards.length === 0) {
+        if (recentBoardsRaw.length === 0) {
           const { data: latestRaw, error: latestErr } = await supabase
             .from('board')
             .select(
@@ -373,8 +395,7 @@ export default function LandingPage() {
               text,
               keyword,
               gender,
-              season,
-              author:profiles ( id, username, profile_url )
+              season
             `
             )
             .order('created_at', { ascending: false })
@@ -382,10 +403,13 @@ export default function LandingPage() {
 
           if (latestErr) throw latestErr;
 
-          const latest = (latestRaw ?? []) as BoardBase[];
+          const latestRawRows =
+            (latestRaw ?? []) as unknown as Omit<BoardBase, 'author'>[];
+          const latestWithAuthor = await attachAuthors(supabase, latestRawRows);
+
           if (!aborted) {
             setTopBoards(
-              latest.map<BoardWithMetrics>((b) => ({
+              latestWithAuthor.map<BoardWithMetrics>((b) => ({
                 ...b,
                 bookmark_count_7d: 0,
                 bookmark_rate_per_hour: 0,
@@ -395,45 +419,14 @@ export default function LandingPage() {
           return;
         }
 
-        const ids = recentBoards.map((b) => b.board_uuid);
+        const recentWithAuthor = await attachAuthors(supabase, recentBoardsRaw);
+        const ids = recentWithAuthor.map((b) => b.board_uuid);
 
-        const { data: bmRows, error: bmErr } = await supabase
+        const { data: bmRows } = await supabase
           .from('bookmark')
           .select('board_id, created_at')
           .in('board_id', ids)
           .gte('created_at', weekAgoISO);
-
-        if (bmErr) {
-          const { data: latestRaw } = await supabase
-            .from('board')
-            .select(
-              `
-              board_uuid,
-              created_at,
-              user_id,
-              image,
-              text,
-              keyword,
-              gender,
-              season,
-              author:profiles ( id, username, profile_url )
-            `
-            )
-            .order('created_at', { ascending: false })
-            .limit(5);
-
-          const latest = (latestRaw ?? []) as BoardBase[];
-          if (!aborted) {
-            setTopBoards(
-              latest.map<BoardWithMetrics>((b) => ({
-                ...b,
-                bookmark_count_7d: 0,
-                bookmark_rate_per_hour: 0,
-              }))
-            );
-          }
-          return;
-        }
 
         const counts = new Map<string, number>();
         for (const row of bmRows ?? []) {
@@ -441,7 +434,7 @@ export default function LandingPage() {
           counts.set(key, (counts.get(key) ?? 0) + 1);
         }
 
-        const withRate: BoardWithMetrics[] = recentBoards.map((b) => {
+        const withRate: BoardWithMetrics[] = recentWithAuthor.map((b) => {
           const cnt = counts.get(b.board_uuid) ?? 0;
           const rate = cnt / hoursSince(b.created_at);
           return {
@@ -468,15 +461,17 @@ export default function LandingPage() {
               text,
               keyword,
               gender,
-              season,
-              author:profiles ( id, username, profile_url )
+              season
             `
             )
             .order('created_at', { ascending: false })
             .limit(5);
 
-          const latest = (latestRaw ?? []) as BoardBase[];
-          top5 = latest.map<BoardWithMetrics>((b) => ({
+          const latestRawRows =
+            (latestRaw ?? []) as unknown as Omit<BoardBase, 'author'>[];
+          const latestWithAuthor = await attachAuthors(supabase, latestRawRows);
+
+          top5 = latestWithAuthor.map<BoardWithMetrics>((b) => ({
             ...b,
             bookmark_count_7d: 0,
             bookmark_rate_per_hour: 0,
@@ -496,7 +491,6 @@ export default function LandingPage() {
     };
   }, [supabase, userGender]);
 
-  // 캐러셀 아이템들의 현재 누적 북마크 수 로딩 (초기값)
   useEffect(() => {
     const ids = topBoards.map((b) => b.board_uuid);
     if (ids.length === 0) return;
@@ -522,7 +516,6 @@ export default function LandingPage() {
           });
         }
       } catch {
-        /* noop */
       }
     })();
 
@@ -542,7 +535,6 @@ export default function LandingPage() {
         이렇게 입어보는거 어떤가요?
       </span>
 
-      {/* 캐러셀: sub에 실시간 누적 북마크 수 */}
       {!loadingTop && topBoards.length > 0 && (
         <MainCarousel
           items={topBoards.map((b, i) => ({
@@ -569,7 +561,6 @@ export default function LandingPage() {
         이렇게 입어보는 것도 추천해요!
       </span>
 
-      {/* 키워드 선택 (다중) */}
       <KeywordList
         keywords={keywords}
         selected={selectedKeywords}
@@ -589,7 +580,6 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* 그리드: 하트 토글(숫자 실시간 X) */}
       {!loading && !error && boards.length > 0 && (
         <div className="grid grid-cols-2 gap-2 mt-4">
           {boards.map((b, i) => {
@@ -629,7 +619,6 @@ export default function LandingPage() {
 
       <NavigationBar />
 
-      {/* 모달 렌더링 */}
       <ImageModal
         open={_modalOpen}
         onClose={() => _setModalOpen(false)}
@@ -652,18 +641,20 @@ export default function LandingPage() {
         }
         bookmarkCount={
           _selectedBoard
-            ? (bookmarkCounts.get(_selectedBoard.board_uuid) ?? 0)
+            ? bookmarkCounts.get(_selectedBoard.board_uuid) ?? 0
             : undefined
         }
         onToggleBookmark={() => {
           if (!_selectedBoard) return;
           const id = _selectedBoard.board_uuid;
           const wasOn = bookmarked.has(id);
+          void toggleBookmark(id);
+          {/*
           void toggleBookmark(id).then(() => {
-            // 캐러셀/모달 카운트 실시간 반영
             const delta = wasOn ? -1 : +1;
             bumpCount(id, delta);
           });
+          */}
         }}
       />
 

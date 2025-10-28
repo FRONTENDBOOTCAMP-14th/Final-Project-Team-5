@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Heart } from 'lucide-react'; // ⬅️ 추가
+import { Heart } from 'lucide-react';
 import ImageList from '@/components/ui/ImageList';
 
 export interface MainCarouselItem {
@@ -18,21 +18,20 @@ export default function MainCarousel({
   onToggleBookmark,
 }: {
   items: MainCarouselItem[];
-  onItemClick?: (id: string) => void; // 클릭 시 모달 콜백
+  onItemClick?: (id: string) => void;
   bookmarkedSet?: Set<string>;
   onToggleBookmark?: (id: string) => void;
 }) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const trackRef = React.useRef<HTMLDivElement>(null);
 
-  // 데스크톱(마우스) 드래그 상태
   const draggingRef = React.useRef(false);
   const startXRef = React.useRef(0);
   const startScrollLeftRef = React.useRef(0);
   const mouseMovedRef = React.useRef(false);
   const [grabbing, setGrabbing] = React.useState(false);
 
-  const CLICK_THRESHOLD = 6; // px
+  const CLICK_THRESHOLD = 6;
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -47,7 +46,6 @@ export default function MainCarousel({
     });
   }, [items.length]);
 
-  // ===== 데스크톱 전용 마우스 드래그 구현 (pointer capture 사용 X) =====
   React.useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -65,7 +63,7 @@ export default function MainCarousel({
       const dx = e.clientX - startXRef.current;
       if (Math.abs(dx) > CLICK_THRESHOLD) mouseMovedRef.current = true;
       el.scrollLeft = startScrollLeftRef.current - dx;
-      e.preventDefault(); // 텍스트 선택 방지
+      e.preventDefault();
     };
 
     const onMouseUp = () => {
@@ -85,7 +83,7 @@ export default function MainCarousel({
   }, []);
 
   const handleCardClick = (id: string) => {
-    if (mouseMovedRef.current) return; // 드래그로 움직였으면 클릭 무시
+    if (mouseMovedRef.current) return;
     onItemClick?.(id);
   };
 
@@ -105,6 +103,7 @@ export default function MainCarousel({
         <div ref={trackRef} className="flex gap-[25px] px-4 py-2">
           {items.map((it) => {
             const on = bookmarkedSet?.has(it.id) ?? false;
+            const hasText = Boolean(it.title || it.sub);
             return (
               <div
                 key={it.id}
@@ -113,33 +112,42 @@ export default function MainCarousel({
                 tabIndex={0}
                 onClick={() => handleCardClick(it.id)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ')
-                    handleCardClick(it.id);
+                  if (e.key === 'Enter' || e.key === ' ') handleCardClick(it.id);
                 }}
               >
-                {/* 카드 컨테이너에 relative 추가 (하트 절대배치용) */}
                 <div className="relative w-[258px] h-[258px] rounded-2xl overflow-hidden bg-white shadow-sm cursor-pointer">
                   <ImageList src={it.image}>
-                    {(it.title || it.sub) && (
-                      <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/40 text-white pointer-events-none">
-                        <div className="text-[14px] font-semibold truncate">
-                          {it.title ?? '게시글'}
-                        </div>
-                        {it.sub && (
-                          <div className="text-[12px] text-gray-200 truncate">
-                            {it.sub}
-                          </div>
-                        )}
+                    <div
+                      className={[
+                        'absolute bottom-0 left-0 right-0 pr-[35px] p-2 pointer-events-none',
+                        'h-[54px] flex flex-col justify-center',
+                        hasText ? 'bg-black/40 text-white' : 'bg-transparent',
+                      ].join(' ')}
+                    >
+                      <div
+                        className={[
+                          'text-[14px] font-semibold truncate',
+                          it.title ? 'opacity-100' : 'opacity-0',
+                        ].join(' ')}
+                      >
+                        {it.title ?? ''}
                       </div>
-                    )}
+                      <div
+                        className={[
+                          'text-[12px] text-gray-200 truncate',
+                          it.sub ? 'opacity-100' : 'opacity-0',
+                        ].join(' ')}
+                      >
+                        {it.sub ?? ''}
+                      </div>
+                    </div>
                   </ImageList>
 
-                  {/* 우하단 하트: ImageList 바깥(형제) + absolute + 전파차단 */}
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      mouseMovedRef.current = false; // 클릭 처리 보장
+                      mouseMovedRef.current = false;
                       onToggleBookmark?.(it.id);
                     }}
                     className="absolute bottom-2 right-2 rounded-full bg-white/80 backdrop-blur-[2px] p-1 shadow"
