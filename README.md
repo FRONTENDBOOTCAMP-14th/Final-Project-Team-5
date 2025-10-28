@@ -161,7 +161,7 @@
 | ------ | ----- | 
 
 ### 🛢 프로젝트 DB구조
-<div align="center"><img width="750" height="500" alt="Image" src="https://github.com/user-attachments/assets/cdfc56d4-c69c-4c86-9183-19d0a569806b" /></div>
+<div align="center"><img width="750" height="500" alt="Image" src="https://github.com/user-attachments/assets/244b5220-2d84-4c5a-a675-7b7de8499925" /></div>
 
 ### 📖 관련 문서 바로가기
  - [GitHub Wiki 보기](https://github.com/FRONTENDBOOTCAMP-14th/Final-Project-Team-5/wiki)
