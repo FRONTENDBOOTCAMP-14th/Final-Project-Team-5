@@ -4,11 +4,20 @@ import React from 'react';
 import FilterButton from '@/components/ui/FilterButton';
 
 interface FilterBarProps {
-  keywords: string[];
+  items?: string[]; // undefined 방지
+  selectedItem?: string;
+  mapToValue?: Record<string, string>;
+  onSelect?: (value: string) => void;
   className?: string;
 }
 
-const FilterBar: React.FC<FilterBarProps> = ({ keywords, className = '' }) => {
+const FilterBar: React.FC<FilterBarProps> = ({
+  items = [],
+  selectedItem,
+  mapToValue,
+  onSelect,
+  className = '',
+}) => {
   return (
     <div
       className={[
@@ -18,11 +27,24 @@ const FilterBar: React.FC<FilterBarProps> = ({ keywords, className = '' }) => {
         className,
       ].join(' ')}
     >
-      {keywords.map((word, i) => (
-        <FilterButton key={i} className="shrink-0">
-          {word}
-        </FilterButton>
-      ))}
+      {items.length > 0 ? (
+        items.map((word, i) => {
+          const value = mapToValue?.[word] ?? word;
+          const isSelected = selectedItem === value;
+          return (
+            <FilterButton
+              key={i}
+              className="shrink-0"
+              aria-pressed={isSelected}
+              onClick={() => onSelect?.(value)}
+            >
+              {word}
+            </FilterButton>
+          );
+        })
+      ) : (
+        <div />
+      )}
     </div>
   );
 };

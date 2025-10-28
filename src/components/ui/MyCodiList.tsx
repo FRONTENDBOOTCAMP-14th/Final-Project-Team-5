@@ -2,9 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import { CreateClient } from '@/libs/supabase/client';
 import ImageForm from './ImageForm';
 import ImageList from './ImageList';
+import Modal from './Modal';
 
 interface CodiItem {
   id: string;
@@ -20,6 +22,10 @@ export default function MyCodiList() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [loadingCodi, setLoadingCodi] = useState(false);
+
+  // 삭제 모달 상태
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCodiId, setSelectedCodiId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUser() {
@@ -83,19 +89,39 @@ export default function MyCodiList() {
   }, [userId, fetchMyCodiForUser]);
 
   const removeCodi = async (board_uuid: string) => {
-    if (!confirm('정말로 코디를 삭제하시겠습니까?')) return;
+    try {
+      const { error } = await supabase
+        .from('board')
+        .delete()
+        .eq('board_uuid', board_uuid);
 
-    const { error } = await supabase
-      .from('board')
-      .delete()
-      .eq('board_uuid', board_uuid);
+      if (error) throw error;
 
-    if (error) {
-      console.error('코디 삭제 오류:', error);
-      return;
+      // 상태 갱신
+      setMyCodi((prev) => prev.filter((codi) => codi.id !== board_uuid));
+
+      toast.success('코디가 삭제되었습니다!');
+    } catch (err) {
+      console.error('코디 삭제 오류:', err);
+      toast.error('코디 삭제에 실패했습니다. 다시 시도해주세요.');
     }
+  };
 
-    if (userId) void fetchMyCodiForUser(userId);
+  const handleDeleteClick = (id: string) => {
+    setSelectedCodiId(id);
+    setModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedCodiId) return;
+    await removeCodi(selectedCodiId);
+    setModalOpen(false);
+    setSelectedCodiId(null);
+  };
+
+  const handleCancelDelete = () => {
+    setModalOpen(false);
+    setSelectedCodiId(null);
   };
 
   if (loadingUser || loadingCodi)
@@ -128,7 +154,7 @@ export default function MyCodiList() {
             <button
               type="button"
               aria-label="코디 삭제"
-              onClick={() => void removeCodi(codi.id)}
+              onClick={() => handleDeleteClick(codi.id)}
               className="absolute top-0 right-0 bg-white text-black p-0.5 rounded-full border-2 border-black"
             >
               <X size={8} />
@@ -146,6 +172,30 @@ export default function MyCodiList() {
           나의 코디 등록하기
         </button>
       </div>
+
+      {/* 삭제 확인 모달 */}
+      <Modal
+        isOpen={modalOpen}
+        title="코디 삭제"
+        onClose={handleCancelDelete}
+        height="40%"
+      >
+        <p className="text-center mb-4">정말로 이 코디를 삭제하시겠습니까?</p>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={handleCancelDelete}
+            className="px-4 py-2 border rounded-lg bg-gray-200"
+          >
+            취소
+          </button>
+          <button
+            onClick={() => void handleConfirmDelete()}
+            className="px-4 py-2 border rounded-lg bg-gray-700 text-white"
+          >
+            삭제
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

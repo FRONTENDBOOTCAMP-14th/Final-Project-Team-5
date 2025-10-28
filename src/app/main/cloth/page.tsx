@@ -127,7 +127,7 @@ export default function LandingPage() {
       </span>
       <MainCarousel />
       <span>이렇게 입어보는 것도 추천해요!</span>
-      <KeywordList keywords={keywords} />
+      <KeywordList items={keywords} />
       <div className="grid grid-cols-2 gap-2 mt-4">
         {[1, 2, 3, 4, 5].map((n) => (
           <div

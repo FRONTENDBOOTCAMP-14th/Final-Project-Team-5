@@ -10,6 +10,7 @@ interface ModalProps {
   children: ReactNode;
   title?: string;
   height?: string;
+  isOpen?: boolean;
 }
 
 export default function Modal({
@@ -17,6 +18,7 @@ export default function Modal({
   children,
   title,
   height = '80%',
+  isOpen = true,
 }: ModalProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -28,6 +30,8 @@ export default function Modal({
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -53,13 +57,13 @@ export default function Modal({
         >
           <div className="flex items-center justify-between mb-4">
             {title ? (
-              <span className="text-sm font-medium">{title}</span>
+              <span className="text-sm font-bold">{title}</span>
             ) : (
               <div />
             )}
             <button
               type="button"
-              aria-label="위치 선택 모달 닫기"
+              aria-label="모달 닫기"
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 cursor-pointer"
             >

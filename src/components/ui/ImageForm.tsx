@@ -5,7 +5,7 @@ import { ArrowLeft, ImageUp } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { CreateClient } from '@/libs/supabase/client';
-import Button from './FilterButton';
+import FilterBar from './KeywordList';
 
 interface Props {
   userId?: string;
@@ -20,7 +20,7 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
   // 파일명 및 파일이미지 미리보기
   const [fileName, setFileName] = useState('');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [hashtag, setHashtag] = useState('');
+  const [description, setDescription] = useState('');
   const [keyword, setKeyword] = useState<string | null>(null);
   const [gender, setGender] = useState<string | null>(null);
   const [season, setSeason] = useState<string | null>(null);
@@ -29,8 +29,7 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
     const file = e.target.files?.[0];
     if (file) {
       setFileName(file.name);
-      const url = URL.createObjectURL(file);
-      setPreviewImage(url);
+      setPreviewImage(URL.createObjectURL(file));
     } else {
       setFileName('');
       setPreviewImage(null);
@@ -42,26 +41,15 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
 
   useEffect(() => {
     return () => {
-      if (previewImage) {
-        try {
-          URL.revokeObjectURL(previewImage);
-        } catch {}
-      }
+      if (previewImage) URL.revokeObjectURL(previewImage);
     };
   }, [previewImage]);
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    const input = fileInputRef.current;
 
-    if (!input?.files?.length) {
+    if (!fileInputRef.current?.files?.length) {
       toast.error('파일을 선택해주세요!');
-      return;
-    }
-
-    const trimmedHashtag = hashtag.trim();
-    if (trimmedHashtag && !trimmedHashtag.startsWith('#')) {
-      toast.error('해시태그는 #으로 시작해야 합니다.');
       return;
     }
 
@@ -75,48 +63,28 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
       return;
     }
 
-    const file = input.files[0];
+    const file = fileInputRef.current.files[0];
     setIsUploading(true);
 
     try {
-      // Supabase 스토리지 버킷 지정
       const imageStorage = supabase.storage.from('imageStorage');
-
-      // 파일 경로 지정
       const filePath = `${userId}/${Date.now()}_${file.name}`;
-      console.warn('Uploading image to:', filePath);
 
-      // 파일 업로드
-      const { data: uploadData, error: uploadError } =
+      const { data: _uploadData, error: uploadError } =
         await imageStorage.upload(filePath, file, {
           cacheControl: '3600',
           upsert: false,
         });
 
-      if (uploadError) {
-        console.error('uploadError', uploadError);
-        toast.error(
-          `사진 업로드 실패: ${uploadError.message || '알 수 없는 오류'}`
-        );
-        return;
-      }
+      if (uploadError) throw uploadError;
 
-      console.warn('uploadData', uploadData);
-
-      // 퍼블릭 URL 생성
       const { data: urlData } = imageStorage.getPublicUrl(filePath);
       const publicUrl = urlData?.publicUrl;
+      if (!publicUrl) throw new Error('퍼블릭 URL을 가져오지 못했습니다.');
 
-      if (!publicUrl) {
-        console.error('publicUrl is empty', urlData);
-        toast.error('업로드는 되었지만 퍼블릭 URL을 가져오지 못했습니다.');
-        return;
-      }
-
-      // Supabase DB에 삽입
       const { error: insertError } = await supabase.from('board').insert({
         image: publicUrl,
-        text: trimmedHashtag,
+        text: description,
         user_id: userId,
         created_at: new Date().toISOString(),
         keyword,
@@ -124,39 +92,33 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
         season,
       });
 
-      if (insertError) {
-        console.error('insertError', insertError);
-        toast.error('데이터 저장 실패!');
-        return;
-      }
+      if (insertError) throw insertError;
 
       toast.success('사진 업로드가 완료되었습니다!');
 
-      // 초기화
       setFileName('');
       setPreviewImage(null);
-      setHashtag('');
+      setDescription('');
       setKeyword(null);
       setGender(null);
       setSeason(null);
 
-      if (previewImage) {
-        try {
-          URL.revokeObjectURL(previewImage);
-        } catch {}
-      }
-
       onSubmitSuccess?.();
       onBack?.();
-    } catch (error) {
-      console.error('unexpected error', error);
-      toast.error('사진 업로드가 실패하였습니다. 다시 시도해주세요.');
+    } catch (error: unknown) {
+      console.error(error);
+      const message =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? (error as { message?: string }).message
+          : String(error);
+      toast.error(message || '업로드 실패! 다시 시도해주세요.');
     } finally {
       setIsUploading(false);
     }
   };
 
-  const keywords = [
+  // 필터 데이터 및 매핑
+  const keywordItems = [
     '캐주얼',
     '스트릿',
     '미니멀',
@@ -164,11 +126,31 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
     '클래식',
     '워크웨어',
   ];
-  const genders = ['male', 'female'];
-  const seasons = ['spring', 'summer', 'autumn', 'winter'];
+  const keywordMap: Record<string, string> = {
+    캐주얼: 'casual',
+    스트릿: 'street',
+    미니멀: 'minimal',
+    스포티: 'sporty',
+    클래식: 'classic',
+    워크웨어: 'workwear',
+  };
+
+  const genderItems = ['남성', '여성'];
+  const genderMap: Record<string, string> = {
+    남성: 'male',
+    여성: 'female',
+  };
+
+  const seasonItems = ['봄', '여름', '가을', '겨울'];
+  const seasonMap: Record<string, string> = {
+    봄: 'spring',
+    여름: 'summer',
+    가을: 'autumn',
+    겨울: 'winter',
+  };
 
   return (
-    <>
+    <div className="pt-4">
       {onBack && (
         <button
           type="button"
@@ -223,55 +205,38 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
         </button>
         {/* 필터버튼 입력 필드*/}
         <div className="flex flex-wrap gap-2 mb-2">
-          {keywords.map((k) => (
-            <Button
-              key={k}
-              type="button"
-              onClick={() => setKeyword(k)}
-              aria-pressed={keyword === k}
-            >
-              {k}
-            </Button>
-          ))}
+          <FilterBar
+            items={keywordItems}
+            mapToValue={keywordMap}
+            selectedItem={keyword ?? ''}
+            onSelect={setKeyword}
+          />
+          <FilterBar
+            items={genderItems}
+            mapToValue={genderMap}
+            selectedItem={gender ?? ''}
+            onSelect={setGender}
+          />
+          <FilterBar
+            items={seasonItems}
+            mapToValue={seasonMap}
+            selectedItem={season ?? ''}
+            onSelect={setSeason}
+          />
         </div>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {genders.map((g) => (
-            <Button
-              key={g}
-              type="button"
-              onClick={() => setGender(g)}
-              aria-pressed={gender === g}
-            >
-              {g}
-            </Button>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {seasons.map((s) => (
-            <Button
-              key={s}
-              type="button"
-              onClick={() => setSeason(s)}
-              aria-pressed={season === s}
-            >
-              {s}
-            </Button>
-          ))}
-        </div>
-        {/* 해시태그 입력 필드*/}
-        <input
-          type="text"
-          id="imageDescription"
-          placeholder="나의 코디를 #해시태그를 이용하여 자랑해보아요!"
-          value={hashtag}
-          onChange={(e) => setHashtag(e.target.value)}
-          className="border p-3 mt-4 mb-4 text-xs text-black text-center w-full max-w-[300px] h-[120px]"
+        {/* 코디 설명 필드 */}
+        <textarea
+          id="codiDescription"
+          placeholder="나의 코디를 소개해보세요!"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="border p-5 mt-4 mb-4 text-xs text-black text-center w-full max-w-[300px] h-[120px]"
           disabled={isUploading}
         />
-        <label htmlFor="imageDescription" className="sr-only">
-          코디소개글
+        <label htmlFor="codiDescription" className="sr-only">
+          코디 소개 글
         </label>
       </form>
-    </>
+    </div>
   );
 }

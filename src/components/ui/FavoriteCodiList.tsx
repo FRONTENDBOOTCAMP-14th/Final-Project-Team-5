@@ -30,7 +30,7 @@ export default function FavoriteCodiList() {
       const uid = userId as string;
       const { data, error } = await supabase
         .from('bookmark')
-        .select(`board_id, board ( image )`)
+        .select('board_id, board ( image )')
         .eq('user_id', uid);
 
       if (error) {
@@ -65,7 +65,9 @@ export default function FavoriteCodiList() {
 
   if (favoriteList.length === 0) {
     return (
-      <p className="text-gray-500 text-center">관심 등록한 코디가 없습니다.</p>
+      <p className="text-gray-500 text-center pt-4">
+        관심 등록한 코디가 없습니다.
+      </p>
     );
   }
 
