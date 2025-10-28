@@ -194,7 +194,11 @@ export default function AccountPage() {
       <div className="flex flex-col h-full">
         {/* 헤더 */}
         <div className="flex items-center px-4 py-4 border-b">
-          <button onClick={HandleBack} className="p-2 -ml-2">
+          <button
+            onClick={HandleBack}
+            className="p-2 -ml-2"
+            aria-label="뒤로가기"
+          >
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-lg font-semibold ml-2">개인정보설정</h1>
@@ -248,16 +252,18 @@ export default function AccountPage() {
             <button
               onClick={HandleLogoutClick}
               className="w-full flex items-center justify-between py-4 "
+              aria-label="로그아웃"
             >
-              <span className="text-base text-blue-500">로그아웃</span>
+              <span className="text-base text-blue-600">로그아웃</span>
             </button>
 
             {/* 회원탈퇴 */}
             <button
               onClick={HandleDeleteClick}
               className="w-full text-left py-4"
+              aria-label="회원탈퇴"
             >
-              <span className="text-base text-red-500">회원탈퇴</span>
+              <span className="text-base text-red-600">회원탈퇴</span>
             </button>
           </div>
         </div>
