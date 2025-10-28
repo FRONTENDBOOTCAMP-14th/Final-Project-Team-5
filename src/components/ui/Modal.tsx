@@ -53,13 +53,13 @@ export default function Modal({
         >
           <div className="flex items-center justify-between mb-4">
             {title ? (
-              <span className="text-sm font-medium">{title}</span>
+              <span className="text-sm font-bold">{title}</span>
             ) : (
               <div />
             )}
             <button
               type="button"
-              aria-label="위치 선택 모달 닫기"
+              aria-label="모달 닫기"
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 cursor-pointer"
             >

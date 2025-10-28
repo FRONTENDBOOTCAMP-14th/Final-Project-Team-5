@@ -75,6 +75,7 @@ export default function WeatherDashboard() {
         {/* 모달창 */}
         {isOpen && (
           <Modal
+            title="내 위치 선택"
             onClose={() => {
               setIsOpen(false);
               setQuery('');
