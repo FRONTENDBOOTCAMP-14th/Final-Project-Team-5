@@ -21,11 +21,11 @@ export default function ImageList({ src, children }: ImageProps) {
         draggable={false}
         className="
           rounded-xl object-cover bg-pink-300
-          pointer-events-none select-none
+          select-none
           [-webkit-user-drag:none]
         "
       />
-      <div className="pointer-events-none">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }
