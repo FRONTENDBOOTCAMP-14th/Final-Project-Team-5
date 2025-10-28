@@ -52,9 +52,11 @@ export default function ImageModal({
       <div className="flex items-center justify-between p-3 border-b">
         {/* 좌측: 작성자 정보 (그대로) */}
         <div className="flex items-center gap-3">
-          <img
+          <Image
             src={avatar}
             alt="author avatar"
+            width={36}
+            height={36}
             className="w-9 h-9 rounded-full object-cover"
           />
           <div className="flex flex-col">

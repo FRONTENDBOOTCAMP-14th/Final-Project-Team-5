@@ -13,7 +13,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const styles = 'w-full px-4 py-3 bg-blue-200 text-black font-bold rounded-lg';
-  
+
   return (
     <button type={type} className={`${styles} ${className}`} {...props}>
       {children}

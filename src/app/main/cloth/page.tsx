@@ -38,6 +38,23 @@ type BoardWithMetrics = BoardBase & {
   bookmark_rate_per_hour: number;
 };
 
+interface BookmarkRow {
+  user_id: string;
+  board_id: string;
+  created_at?: string;
+}
+
+interface RawBoardRow {
+  board_uuid: string;
+  created_at: string;
+  user_id: string;
+  image: string | null;
+  text: string;
+  keyword: string | null;
+  gender: string | null;
+  season: string | null;
+}
+
 function getSeasonEN(
   currentTemp: number | undefined
 ): 'winter' | 'spring' | 'summer' | 'autumn' | null {
@@ -69,9 +86,9 @@ async function attachAuthors(
     season: string | null;
   }>
 ): Promise<BoardBase[]> {
-  const ids = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)));
+  const ids = Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean)));
   if (ids.length === 0) {
-    return rows.map(r => ({
+    return rows.map((r) => ({
       ...r,
       author: { id: r.user_id, username: null, profile_url: null },
     })) as BoardBase[];
@@ -88,10 +105,13 @@ async function attachAuthors(
     map.set(pr.id, pr);
   }
 
-  return rows.map(r => ({
+  return rows.map((r) => ({
     ...r,
-    author:
-      map.get(r.user_id) ?? { id: r.user_id, username: null, profile_url: null },
+    author: map.get(r.user_id) ?? {
+      id: r.user_id,
+      username: null,
+      profile_url: null,
+    },
   })) as BoardBase[];
 }
 
@@ -325,16 +345,22 @@ export default function LandingPage() {
         if (error) {
           setError(error.message);
         } else {
-          const unique = new Map<string, any>();
-          for (const row of data ?? []) {
+          const unique = new Map<string, RawBoardRow>();
+          for (const row of (data ?? []) as RawBoardRow[]) {
             if (!unique.has(row.board_uuid)) unique.set(row.board_uuid, row);
           }
           const cleaned = Array.from(unique.values());
           const withAuthor = await attachAuthors(supabase, cleaned);
           setBoards(withAuthor);
         }
-      } catch (e: any) {
-        if (!aborted) setError(e?.message ?? '알 수 없는 오류');
+      } catch (e: unknown) {
+        if (!aborted) {
+          if (e instanceof Error) {
+            setError(e.message);
+          } else {
+            setError('알 수 없는 오류');
+          }
+        }
       } finally {
         if (!aborted) setLoading(false);
       }
@@ -380,8 +406,10 @@ export default function LandingPage() {
         const { data: recentRaw, error: boardsErr } = await q;
         if (boardsErr) throw boardsErr;
 
-        const recentBoardsRaw =
-          (recentRaw ?? []) as unknown as Omit<BoardBase, 'author'>[];
+        const recentBoardsRaw = (recentRaw ?? []) as unknown as Omit<
+          BoardBase,
+          'author'
+        >[];
 
         if (recentBoardsRaw.length === 0) {
           const { data: latestRaw, error: latestErr } = await supabase
@@ -403,8 +431,10 @@ export default function LandingPage() {
 
           if (latestErr) throw latestErr;
 
-          const latestRawRows =
-            (latestRaw ?? []) as unknown as Omit<BoardBase, 'author'>[];
+          const latestRawRows = (latestRaw ?? []) as unknown as Omit<
+            BoardBase,
+            'author'
+          >[];
           const latestWithAuthor = await attachAuthors(supabase, latestRawRows);
 
           if (!aborted) {
@@ -422,15 +452,16 @@ export default function LandingPage() {
         const recentWithAuthor = await attachAuthors(supabase, recentBoardsRaw);
         const ids = recentWithAuthor.map((b) => b.board_uuid);
 
-        const { data: bmRows } = await supabase
+        const { data: bmRows, error: bmErr } = await supabase
           .from('bookmark')
-          .select('board_id, created_at')
-          .in('board_id', ids)
-          .gte('created_at', weekAgoISO);
+          .select('board_id')
+          .in('board_id', ids);
+
+        if (bmErr) throw bmErr;
 
         const counts = new Map<string, number>();
-        for (const row of bmRows ?? []) {
-          const key = (row as any).board_id as string;
+        for (const r of (bmRows ?? []) as { board_id: string }[]) {
+          const key = r.board_id;
           counts.set(key, (counts.get(key) ?? 0) + 1);
         }
 
@@ -467,8 +498,10 @@ export default function LandingPage() {
             .order('created_at', { ascending: false })
             .limit(5);
 
-          const latestRawRows =
-            (latestRaw ?? []) as unknown as Omit<BoardBase, 'author'>[];
+          const latestRawRows = (latestRaw ?? []) as unknown as Omit<
+            BoardBase,
+            'author'
+          >[];
           const latestWithAuthor = await attachAuthors(supabase, latestRawRows);
 
           top5 = latestWithAuthor.map<BoardWithMetrics>((b) => ({
@@ -504,10 +537,10 @@ export default function LandingPage() {
           .in('board_id', ids);
 
         if (!error && !aborted) {
+          const rows = (data ?? []) as BookmarkRow[];
           const m = new Map<string, number>();
-          for (const r of data ?? []) {
-            const id = (r as any).board_id as string;
-            m.set(id, (m.get(id) ?? 0) + 1);
+          for (const r of rows) {
+            m.set(r.board_id, (m.get(r.board_id) ?? 0) + 1);
           }
           setBookmarkCounts((prev) => {
             const next = new Map(prev);
@@ -515,8 +548,7 @@ export default function LandingPage() {
             return next;
           });
         }
-      } catch {
-      }
+      } catch {}
     })();
 
     return () => {
@@ -641,20 +673,19 @@ export default function LandingPage() {
         }
         bookmarkCount={
           _selectedBoard
-            ? bookmarkCounts.get(_selectedBoard.board_uuid) ?? 0
+            ? (bookmarkCounts.get(_selectedBoard.board_uuid) ?? 0)
             : undefined
         }
         onToggleBookmark={() => {
           if (!_selectedBoard) return;
           const id = _selectedBoard.board_uuid;
           const wasOn = bookmarked.has(id);
+
+          // ✅ 낙관적 UI 업데이트: 즉시 숫자 반영
+          bumpCount(id, wasOn ? -1 : +1);
+
+          // ✅ DB 업데이트
           void toggleBookmark(id);
-          {/*
-          void toggleBookmark(id).then(() => {
-            const delta = wasOn ? -1 : +1;
-            bumpCount(id, delta);
-          });
-          */}
         }}
       />
 

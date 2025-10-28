@@ -112,7 +112,8 @@ export default function MainCarousel({
                 tabIndex={0}
                 onClick={() => handleCardClick(it.id)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') handleCardClick(it.id);
+                  if (e.key === 'Enter' || e.key === ' ')
+                    handleCardClick(it.id);
                 }}
               >
                 <div className="relative w-[258px] h-[258px] rounded-2xl overflow-hidden bg-white shadow-sm cursor-pointer">
