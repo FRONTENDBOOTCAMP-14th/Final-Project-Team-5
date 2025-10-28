@@ -136,7 +136,7 @@ export default function MyCodiList() {
     return (
       <ImageForm
         userId={userId}
-        onBack={() => setShowForm(false)}
+        onBack={myCodi.length > 0 ? () => setShowForm(false) : undefined}
         onSubmitSuccess={() => {
           setShowForm(false);
           void fetchMyCodiForUser(userId);

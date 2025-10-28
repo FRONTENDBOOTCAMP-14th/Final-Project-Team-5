@@ -217,13 +217,13 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
         {/* 업로드 완료시 버튼 */}
         <button
           type="submit"
-          className="w-[135px] px-2.5 py-0.5 border rounded-2xl border-[#736F6F] cursor-pointer whitespace-nowrap text-xs text-[#736F6F]"
+          className="w-[135px] px-2.5 py-0.5 mb-2 border rounded-2xl border-[#736F6F] cursor-pointer whitespace-nowrap text-xs text-[#736F6F]"
           disabled={isUploading}
         >
           코디사진 업로드하기
         </button>
         {/* 필터버튼 입력 필드*/}
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex flex-wrap gap-2">
           <KeywordList
             keywords={keywordItems}
             value={keyword}
@@ -236,19 +236,17 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
               클래식: 'classic',
               워크웨어: 'workwear',
             }}
-            className="mb-2"
           />
         </div>
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex flex-wrap gap-2">
           <KeywordList
             keywords={genderItems}
             value={gender}
             onChange={setGender}
             mapToValue={{ 남성: 'male', 여성: 'female' }}
-            className="mb-2"
           />
         </div>
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2">
           <KeywordList
             keywords={seasonItems}
             value={season}
@@ -259,7 +257,6 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
               가을: 'autumn',
               겨울: 'winter',
             }}
-            className="mb-4"
           />
         </div>
         {/* 코디 설명 필드*/}
