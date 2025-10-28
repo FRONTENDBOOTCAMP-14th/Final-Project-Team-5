@@ -18,32 +18,32 @@ export type Database = {
         Row: {
           board_uuid: string;
           created_at: string;
+          gender: string | null;
           image: string | null;
           keyword: string | null;
-          gender: string | null;
+          season: string | null;
           text: string;
           user_id: string;
-          season: string | null;
         };
         Insert: {
           board_uuid?: string;
           created_at?: string;
+          gender?: string | null;
           image?: string | null;
           keyword?: string | null;
-          gender: string | null;
+          season?: string | null;
           text: string;
           user_id: string;
-          season: string | null;
         };
         Update: {
           board_uuid?: string;
           created_at?: string;
+          gender?: string | null;
           image?: string | null;
           keyword?: string | null;
-          gender: string | null;
+          season?: string | null;
           text?: string;
           user_id?: string;
-          season: string | null;
         };
         Relationships: [
           {
@@ -90,7 +90,6 @@ export type Database = {
       };
       profiles: {
         Row: {
-          bio: string | null;
           created_at: string;
           email: string | null;
           gender: string | null;
@@ -102,7 +101,6 @@ export type Database = {
           username: string | null;
         };
         Insert: {
-          bio?: string | null;
           created_at?: string;
           email?: string | null;
           gender?: string | null;
@@ -114,7 +112,6 @@ export type Database = {
           username?: string | null;
         };
         Update: {
-          bio?: string | null;
           created_at?: string;
           email?: string | null;
           gender?: string | null;
