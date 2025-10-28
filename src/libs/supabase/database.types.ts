@@ -14,66 +14,36 @@ export type Database = {
   };
   public: {
     Tables: {
-      account: {
-        Row: {
-          avatar_url: string | null;
-          created_timestamp: string;
-          gender: string;
-          nickname: string;
-          password: string;
-          pre_keyword: string;
-          profile_desc: string | null;
-          unique_id: string;
-          username: string;
-        };
-        Insert: {
-          avatar_url?: string | null;
-          created_timestamp: string;
-          gender: string;
-          nickname: string;
-          password: string;
-          pre_keyword: string;
-          profile_desc?: string | null;
-          unique_id?: string;
-          username: string;
-        };
-        Update: {
-          avatar_url?: string | null;
-          created_timestamp?: string;
-          gender?: string;
-          nickname?: string;
-          password?: string;
-          pre_keyword?: string;
-          profile_desc?: string | null;
-          unique_id?: string;
-          username?: string;
-        };
-        Relationships: [];
-      };
       board: {
         Row: {
           board_uuid: string;
           created_at: string;
           image: string | null;
           keyword: string | null;
+          gender: string | null;
           text: string;
           user_id: string;
+          season: string | null;
         };
         Insert: {
           board_uuid?: string;
           created_at?: string;
           image?: string | null;
           keyword?: string | null;
+          gender: string | null;
           text: string;
           user_id: string;
+          season: string | null;
         };
         Update: {
           board_uuid?: string;
           created_at?: string;
           image?: string | null;
           keyword?: string | null;
+          gender: string | null;
           text?: string;
           user_id?: string;
+          season: string | null;
         };
         Relationships: [
           {
@@ -124,6 +94,7 @@ export type Database = {
           created_at: string;
           email: string | null;
           gender: string | null;
+          has_seen_onboarding: boolean | null;
           id: string;
           profile_desc: string | null;
           profile_url: string | null;
@@ -135,6 +106,7 @@ export type Database = {
           created_at?: string;
           email?: string | null;
           gender?: string | null;
+          has_seen_onboarding?: boolean | null;
           id?: string;
           profile_desc?: string | null;
           profile_url?: string | null;
@@ -146,6 +118,7 @@ export type Database = {
           created_at?: string;
           email?: string | null;
           gender?: string | null;
+          has_seen_onboarding?: boolean | null;
           id?: string;
           profile_desc?: string | null;
           profile_url?: string | null;

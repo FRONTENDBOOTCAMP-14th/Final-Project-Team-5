@@ -1,3 +1,6 @@
+'use client';
+
+import React from 'react';
 import Image from 'next/image';
 
 interface ImageProps {
@@ -7,14 +10,22 @@ interface ImageProps {
 
 export default function ImageList({ src, children }: ImageProps) {
   return (
-    <div className="relative flex justify-center w-[100%] aspect-square">
+    <div
+      className="relative flex justify-center w-[100%] aspect-square"
+      onDragStart={(e) => e.preventDefault()}
+    >
       <Image
         src={src}
         alt="코디사진"
         fill
-        className="rounded-xl object-cover cursor-pointer bg-pink-300"
+        draggable={false}
+        className="
+          rounded-xl object-cover bg-pink-300
+          pointer-events-none select-none
+          [-webkit-user-drag:none]
+        "
       />
-      {children}
+      <div className="pointer-events-none">{children}</div>
     </div>
   );
 }
