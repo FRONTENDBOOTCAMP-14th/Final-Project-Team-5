@@ -116,9 +116,9 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
         text: description,
         user_id: userId,
         created_at: new Date().toISOString(),
-        keyword: keywordMap[keyword] ?? keyword,
-        gender: genderMap[gender] ?? gender,
-        season: seasonMap[season] ?? season,
+        keyword: keyword ?? '',
+        gender: genderMap[gender ?? ''] ?? '',
+        season: seasonMap[season ?? ''] ?? '',
       });
       if (insertError) throw insertError;
 
@@ -190,10 +190,10 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
             <Image
               src={previewImage}
               alt="이미지 미리보기"
-              width={500}
-              height={500}
+              width={250}
+              height={250}
               className="object-contain rounded-xl w-[40%] h-auto"
-              loading="lazy"
+              priority
             />
           ) : (
             <ImageUp
@@ -228,14 +228,6 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
             keywords={keywordItems}
             value={keyword}
             onChange={setKeyword}
-            mapToValue={{
-              캐주얼: 'casual',
-              스트릿: 'street',
-              미니멀: 'minimal',
-              스포티: 'sporty',
-              클래식: 'classic',
-              워크웨어: 'workwear',
-            }}
           />
         </div>
         <div className="flex flex-wrap gap-2">
