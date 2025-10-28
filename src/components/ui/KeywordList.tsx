@@ -9,6 +9,10 @@ interface FilterBarProps {
   mapToValue?: Record<string, string>;
   onSelect?: (value: string) => void;
   className?: string;
+  selected?: string[];
+  onSelect?: (kw: string) => void;
+  value?: string | null;
+  onChange?: (kw: string) => void;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -49,4 +53,4 @@ const FilterBar: React.FC<FilterBarProps> = ({
   );
 };
 
-export default FilterBar;
+export default KeywordList;

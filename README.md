@@ -13,7 +13,7 @@
 | ------------ | --------------------------|
 | 언어         |  <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"/> <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=Next.js&logoColor=white"/> <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=flat-square&logo=Tailwind-CSS&logoColor=white"/> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=black"/> |
 | OS          | <img src="https://img.shields.io/badge/Windows-1572B6?style=flat-square&logo=windows&logoColor=white"/> <img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white"/> |
-| 개발환경     | <img src="https://img.shields.io/badge/Visual Studio Code-00B2E3?style=flat-square&logo=vscode&logoColor=white"/> <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white"/> <img src="https://img.shields.io/badge/Bun-000000?style=flat-square&logo=Bun&logoColor=white"/> |
+| 개발환경     | <img src="https://img.shields.io/badge/Visual Studio Code-00B2E3?style=flat-square&logo=vscode&logoColor=white"/> <img src="https://img.shields.io/badge/Bun-000000?style=flat-square&logo=Bun&logoColor=white"/> |
 | 디자인       | <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=figma&logoColor=white"/> |
 | 버전관리     | <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/> <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white"/> |
 | 커뮤니케이션 | <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=discord&logoColor=white"/> <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white"/> |
@@ -161,8 +161,9 @@
 | ------ | ----- | 
 
 ### 🛢 프로젝트 DB구조
-<div align="center"><img width="750" height="500" alt="supabase-schema-ldienmsbfilcckzrsbwu" src="https://github.com/user-attachments/assets/74931a11-6746-4446-bcf6-63e46d51512b" /></div>
+<div align="center"><img width="750" height="500" alt="Image" src="https://github.com/user-attachments/assets/cdfc56d4-c69c-4c86-9183-19d0a569806b" /></div>
 
 ### 📖 관련 문서 바로가기
  - [GitHub Wiki 보기](https://github.com/FRONTENDBOOTCAMP-14th/Final-Project-Team-5/wiki)
  - [Figma 시안 보기](https://www.figma.com/design/lh07M4GQXyWqSh0JeTDNl4/weather-clothing?node-id=0-1&t=Rvx5ZngmZiR7lG9H-0)
+ - [Notion 보기](https://www.notion.so/5-27773873401a809f900fdb8997538b3e?source=copy_link)
