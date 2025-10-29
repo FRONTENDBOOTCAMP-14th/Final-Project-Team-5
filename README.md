@@ -47,6 +47,7 @@
 │   ├── 📁 codi
 │   ├── 📁 email
 │   ├── 📁 hanger
+│   ├── 📁 profile
 │   └── 📁 weather
 ├── 📁 src
 │   ├── 📁 @types
@@ -103,6 +104,7 @@
 │   │   │   ├── NavigationBar.tsx
 │   │   │   ├── Notification.tsx
 │   │   │   ├── OnboardingModal.tsx
+│   │   │   ├── ProfileEditForm.tsx
 │   │   │   ├── ProfileSheet.tsx
 │   │   │   ├── ProfileTab.tsx
 │   │   │   ├── SnsButton.tsx
@@ -120,7 +122,6 @@
 │   │   │   └── weatherStore.ts
 │   │   ├── 📁 supabase
 │   │   │   ├── client.ts
-│   │   │   ├── codistore.ts
 │   │   │   ├── database.types.ts
 │   │   │   └── server.ts
 │   │   ├── getLocation.ts
