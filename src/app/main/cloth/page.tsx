@@ -679,12 +679,7 @@ export default function LandingPage() {
         onToggleBookmark={() => {
           if (!_selectedBoard) return;
           const id = _selectedBoard.board_uuid;
-          const wasOn = bookmarked.has(id);
 
-          // ✅ 낙관적 UI 업데이트: 즉시 숫자 반영
-          bumpCount(id, wasOn ? -1 : +1);
-
-          // ✅ DB 업데이트
           void toggleBookmark(id);
         }}
       />
