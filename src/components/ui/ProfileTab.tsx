@@ -8,7 +8,7 @@ export default function ProfileTab() {
   const [activeTab, setActiveTab] = useState<'favorite' | 'my'>('favorite');
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 pb-[72px]">
+    <div className="w-full pb-[72px]">
       <div
         role="group"
         aria-label="코디 탭 선택"

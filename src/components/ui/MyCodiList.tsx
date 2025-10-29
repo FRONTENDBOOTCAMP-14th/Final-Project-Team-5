@@ -146,7 +146,7 @@ export default function MyCodiList() {
 
   return (
     <div>
-      <div className="max-w-md mx-auto w-full justify-items-center grid grid-cols-2 gap-4 p-4">
+      <div className="justify-items-center grid grid-cols-2 gap-4 p-4">
         {myCodi.map((codi) => (
           <ImageList key={codi.id} src={codi.imageUrl}>
             <button
