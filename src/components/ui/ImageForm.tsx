@@ -235,7 +235,6 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
             keywords={genderItems}
             value={gender}
             onChange={setGender}
-            mapToValue={{ 남성: 'male', 여성: 'female' }}
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -243,12 +242,6 @@ export default function ImageForm({ onBack, onSubmitSuccess, userId }: Props) {
             keywords={seasonItems}
             value={season}
             onChange={setSeason}
-            mapToValue={{
-              봄: 'spring',
-              여름: 'summer',
-              가을: 'autumn',
-              겨울: 'winter',
-            }}
           />
         </div>
         {/* 코디 설명 필드*/}
