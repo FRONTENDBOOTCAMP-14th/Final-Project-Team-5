@@ -23,18 +23,12 @@ const KeywordList: React.FC<KeywordListProps> = ({
   mapToValue,
 }) => {
   const isSelected = (kw: string) => {
-    const mapped = mapToValue?.[kw] ?? kw;
-    return Array.isArray(selected)
-      ? selected.includes(mapped)
-      : value === mapped;
+    return Array.isArray(selected) ? selected.includes(kw) : value === kw;
   };
   const handleClick = (e: React.MouseEvent, kw: string) => {
     e.stopPropagation();
-
-    const mappedValue = mapToValue?.[kw] ?? kw;
-
-    if (onSelect) return onSelect(mappedValue);
-    if (onChange) return onChange(mappedValue);
+    if (onSelect) return onSelect(kw);
+    if (onChange) return onChange(kw);
   };
 
   return (
