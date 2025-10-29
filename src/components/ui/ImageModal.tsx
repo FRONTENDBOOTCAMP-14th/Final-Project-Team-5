@@ -21,7 +21,6 @@ interface ImageModalProps {
     author?: Author | null;
   };
 
-  /** ⬇️ 추가: 모달 우측 컨트롤용 */
   isBookmarked?: boolean;
   bookmarkCount?: number;
   onToggleBookmark?: () => void;
@@ -39,7 +38,7 @@ export default function ImageModal({
 
   const src = data?.image ?? '';
   const nickname = data?.author?.username ?? '알 수 없음';
-  const avatar = data?.author?.profile_url ?? '/hanger/logo.png';
+  const avatar = data?.author?.profile_url ?? '/profile/profileimage.png';
   const text = data?.text ?? '';
   const keyword = data?.keyword ?? '';
   const createdAt = data?.created_at
@@ -53,9 +52,11 @@ export default function ImageModal({
       <div className="flex items-center justify-between p-3 border-b">
         {/* 좌측: 작성자 정보 (그대로) */}
         <div className="flex items-center gap-3">
-          <img
+          <Image
             src={avatar}
             alt="author avatar"
+            width={36}
+            height={36}
             className="w-9 h-9 rounded-full object-cover"
           />
           <div className="flex flex-col">

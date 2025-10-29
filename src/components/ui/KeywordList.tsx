@@ -10,6 +10,7 @@ interface KeywordListProps {
   onSelect?: (kw: string) => void;
   value?: string | null;
   onChange?: (kw: string) => void;
+  mapToValue?: Record<string, string>; // 추가: 한글 -> 영어 매핑
 }
 
 const KeywordList: React.FC<KeywordListProps> = ({
@@ -19,16 +20,21 @@ const KeywordList: React.FC<KeywordListProps> = ({
   onSelect,
   value,
   onChange,
+  mapToValue,
 }) => {
-  const isSelected = (kw: string) =>
-    Array.isArray(selected) ? selected.includes(kw) : value === kw;
-
+  const isSelected = (kw: string) => {
+    const mapped = mapToValue?.[kw] ?? kw;
+    return Array.isArray(selected)
+      ? selected.includes(mapped)
+      : value === mapped;
+  };
   const handleClick = (e: React.MouseEvent, kw: string) => {
-    e.preventDefault();
     e.stopPropagation();
 
-    if (onSelect) return onSelect(kw);
-    if (onChange) return onChange(kw);
+    const mappedValue = mapToValue?.[kw] ?? kw;
+
+    if (onSelect) return onSelect(mappedValue);
+    if (onChange) return onChange(mappedValue);
   };
 
   return (
