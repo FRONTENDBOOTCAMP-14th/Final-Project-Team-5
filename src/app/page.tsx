@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Button from '@/components/ui/Button';
 import Frame from '@/components/ui/Frame';
@@ -9,6 +9,7 @@ import SnsButton from '@/components/ui/SnsButton';
 import { CreateClient } from '@/libs/supabase/client';
 
 export default function LandingPage() {
+  const router = useRouter();
   const supabase = CreateClient();
 
   async function HandleKakaoLogin() {
@@ -63,6 +64,14 @@ export default function LandingPage() {
     void HandleGoogleLogin();
   }
 
+  function HandleEmailLogin() {
+    router.push('/auth/signin');
+  }
+
+  function HandleSignup() {
+    router.push('/auth/signup');
+  }
+
   return (
     <Frame>
       <div className="flex flex-col items-center justify-center h-full px-8">
@@ -100,12 +109,15 @@ export default function LandingPage() {
 
         {/* 버튼 영역 */}
         <div className="w-full space-y-4">
-          <Link href="/auth/signin" className="block">
-            <Button className="hover:bg-blue-300">이메일 로그인</Button>
-          </Link>
-          <Link href="/auth/signup" className="block">
-            <Button className="bg-gray-300 hover:bg-gray-400">회원가입</Button>
-          </Link>
+          <Button onClick={HandleEmailLogin} className="hover:bg-blue-300">
+            이메일 로그인
+          </Button>
+          <Button
+            onClick={HandleSignup}
+            className="bg-gray-300 hover:bg-gray-400"
+          >
+            회원가입
+          </Button>
         </div>
       </div>
     </Frame>
