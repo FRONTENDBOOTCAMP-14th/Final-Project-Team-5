@@ -72,7 +72,7 @@ export default function FavoriteCodiList() {
   }
 
   return (
-    <div className="max-w-md mx-auto w-full justify-items-center grid grid-cols-2 gap-4 p-4">
+    <div className="justify-items-center grid grid-cols-2 gap-4 p-4">
       {favoriteList.map((codi) => (
         <ImageList key={codi.board_id} src={codi.board.image}>
           <button

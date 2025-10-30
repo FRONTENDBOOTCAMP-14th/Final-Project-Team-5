@@ -128,7 +128,7 @@ export default function SignInPage() {
                 height={40}
                 className="mb-2"
               />
-              <p className="text-sm font-semibold">오늘뭐입지</p>
+              <span className="text-sm font-semibold">오늘뭐입지</span>
             </button>
           </div>
         </form>
