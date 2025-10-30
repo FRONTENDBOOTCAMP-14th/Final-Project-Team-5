@@ -149,7 +149,7 @@
 </details>
 
 ### 💻 프로젝트 Flow Chart
-<img width="1231" height="279" alt="Image" src="https://github.com/user-attachments/assets/be0a2e54-c3bb-4495-8ff8-25df645b07fc" />
+<img width="1094" height="253" alt="Image" src="https://github.com/user-attachments/assets/95d623f5-ab8e-40a9-b67f-b06123342253" />
 
 ### 🖼 프로젝트 와이어 프레임
 <div align="center"><img width="800" height="500" alt="Image" src="https://github.com/user-attachments/assets/a7de242b-ccac-4f1d-a115-2474ac568dcd" /></div>
