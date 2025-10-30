@@ -51,14 +51,14 @@ export default function WeatherDashboard() {
   // 로딩스피너
   if (!locationName) {
     return (
-      <div className="h-[228px] p-3 rounded-2xl mx-auto bg-[#FFFFFF] flex items-center justify-center">
+      <div className="h-57 p-3 rounded-2xl mx-auto bg-[#FFFFFF] flex items-center justify-center">
         <Spinner size="sm" />
       </div>
     );
   }
 
   return (
-    <div className="h-[228px] p-3 rounded-2xl mx-auto bg-[#FFFFFF]">
+    <div className="h-57 p-3 rounded-2xl mx-auto bg-[#FFFFFF]">
       {/* 위치 및 더보기 버튼 */}
       <div className="flex place-content-between">
         {/* 현재위치 클릭시 내 위치선택 모달창 연결 */}
@@ -131,7 +131,7 @@ export default function WeatherDashboard() {
 
             {/* 결과표시 */}
             <div
-              className="max-h-[400px] overflow-y-auto scroll scrollbar-hide scroll-smooth"
+              className="max-h-100 overflow-y-auto scroll scrollbar-hide scroll-smooth"
               style={{
                 scrollbarWidth: 'none', // Firefox
                 msOverflowStyle: 'none', // IE/Edge
@@ -150,7 +150,7 @@ export default function WeatherDashboard() {
                     <tr
                       key={index}
                       tabIndex={0}
-                      className={`h-[44px] px-1 ${
+                      className={`h-11 px-1 ${
                         results?.documents?.length
                           ? 'hover:bg-[#EBF3FE] cursor-pointer'
                           : ''
@@ -170,7 +170,7 @@ export default function WeatherDashboard() {
                       <td className="text-center items-center">
                         <input
                           type="checkbox"
-                          className="border-[1px] w-5 h-5"
+                          className="border w-5 h-5"
                           checked={isSelect === index}
                           onChange={() =>
                             setIsSelect(isSelect === index ? null : index)
